@@ -5,8 +5,9 @@
     },
     "about": {
         "line1": "I've been developing myself in digital design for 8 years.",
-        "line2": "Thanks to my passion for technology",
-        "line3": "in areas like AI and IoT",
-        "line4": "I'm constantly learning new things."
+        "line2": "Thanks to my passion for technology, I keep learning new things,",
+        "line3": "developing projects in areas like",
+        "line4": "artificial intelligence and IoT",
+        "line5": "while pushing my limits."
     }
 }

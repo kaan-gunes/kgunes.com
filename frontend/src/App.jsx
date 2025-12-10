@@ -12,6 +12,8 @@ function App() {
   const heroImageRef = useRef(null);
   const selfieRef = useRef(null);
   const aboutTextRef = useRef(null);
+  const taglineRef = useRef(null);
+  const nameRef = useRef(null);
 
   useEffect(() => {
     // Lenis smooth scroll
@@ -34,6 +36,40 @@ function App() {
     const heroImage = heroImageRef.current;
     const selfie = selfieRef.current;
     const aboutText = aboutTextRef.current;
+    const tagline = taglineRef.current;
+    const name = nameRef.current;
+
+    // Giriş animasyonları - sayfa yüklendiğinde
+    // Hero background fade in + zoom out
+    gsap.fromTo(
+      heroImage,
+      { opacity: 0, scale: 1.1 },
+      { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" }
+    );
+
+    gsap.fromTo(
+      tagline,
+      { opacity: 0 },
+      { opacity: 1, duration: 1, ease: "power2.out", delay: 0.5 }
+    );
+
+    // KAAN GÜNEŞ - soldan sağa gradient mask ile opacity artışı + blur
+    gsap.fromTo(
+      name,
+      {
+        opacity: 0,
+        "--mask-pos": "-100%",
+        filter: "blur(8px)"
+      },
+      {
+        opacity: 1,
+        "--mask-pos": "100%",
+        filter: "blur(0px)",
+        duration: 2.2,
+        ease: "expo.out",
+        delay: 0.6
+      }
+    );
 
     // Aşağıdan yukarıya gradyan fade efekti
     const scrollDistance = window.innerHeight - 200;
@@ -61,7 +97,7 @@ function App() {
 
     // Selfie parallax efekti - daha yavaş scroll (sticky effect)
     gsap.to(selfie, {
-      y: 200, // Aşağı hareket = daha yavaş kayar = boşluk açılır
+      y: 200, // Daha fazla sticky efekt
       ease: "none",
       scrollTrigger: {
         trigger: ".about-section",
@@ -86,16 +122,15 @@ function App() {
     // Staggered Text Reveal Animation - Blur to Sharp
     if (aboutText) {
       const textLines = aboutText.querySelectorAll(".about-line");
-      const textReveals = aboutText.querySelectorAll(".about-line-reveal")
 
       if (textLines.length > 0) {
         // Timeline ile sıralı animasyon
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: aboutText,
-            start: "top 90%",
-            end: "top 10%",
-            scrub: .5,
+            start: "top 80%",
+            end: "top -40%",
+            scrub: .2,
           },
         });
 
@@ -105,52 +140,59 @@ function App() {
             line,
             {
               opacity: 0,
-              filter: "blur(20px)",
+              filter: "blur(10px)",
             },
             {
               opacity: 1,
               filter: "blur(0px)",
               duration: 1,
-              ease: "power2.out",
+              ease: "expo.out",
             },
-            i * 0.2 // Daha sık stagger
+            i * 0.2
           );
         });
-      }
-
-      if (textReveals.length > 0) {
-        // Timeline ile sıralı animasyon
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: aboutText,
-            start: "top 90%",
-            end: "top 50%",
-            scrub: 0.5,
-          },
-        });
-
-        // Her satırı sırayla animate et
-        textReveals.forEach((line, i) => {
-          tl.fromTo(
-            line,
-            {
-              scaleX: 1
-            },
-            {
-              scaleX: 0,
-              ease: "power2.out",
-            },
-            
-          );
-        });
-
-        
       }
     }
+
+    // 1920px baz alınarak resolution scaling sistemi
+    // QHD ve daha büyük ekranlarda site 1920x1080'deki gibi görünsün
+    const BASE_WIDTH = 1920;
+
+    const applyResolutionScaling = () => {
+      const viewportWidth = window.innerWidth;
+
+      if (viewportWidth > BASE_WIDTH) {
+        // 1920px'den büyük ekranlarda scale uygula
+        const scale = viewportWidth / BASE_WIDTH;
+
+        // Hero container'ı scale et
+        const heroElement = document.querySelector('.hero');
+        if (heroElement) {
+          heroElement.style.transform = `scale(${scale})`;
+          heroElement.style.transformOrigin = 'top left';
+          heroElement.style.width = `${BASE_WIDTH}px`;
+          // Scale sonrası yüksekliği düzelt
+          document.body.style.height = `${heroElement.scrollHeight * scale}px`;
+        }
+      } else {
+        // 1920px ve altında normal görüntüle
+        const heroElement = document.querySelector('.hero');
+        if (heroElement) {
+          heroElement.style.transform = 'none';
+          heroElement.style.width = '100%';
+          document.body.style.height = 'auto';
+        }
+      }
+    };
+
+    // İlk yüklemede ve resize'da uygula
+    applyResolutionScaling();
+    window.addEventListener('resize', applyResolutionScaling);
 
     return () => {
       lenis.destroy();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      window.removeEventListener('resize', applyResolutionScaling);
     };
   }, []);
 
@@ -160,12 +202,12 @@ function App() {
       <div ref={heroImageRef} className="hero-bg"></div>
 
       {/* Top Text */}
-      <p className="tagline">
+      <p ref={taglineRef} className="tagline">
         <em>{t("tagline.line1")}</em> {t("tagline.line2")}
       </p>
 
       {/* Main Name */}
-      <h1 className="name">
+      <h1 ref={nameRef} className="name">
         <span className="first">Kaan</span>
         <span className="last">Güneş</span>
       </h1>
@@ -177,23 +219,17 @@ function App() {
         </div>
 
         <div ref={aboutTextRef} className="about-text-wrapper">
-          {/* Üst satır - Tam genişlik */}
+          {/* Üst satırlar - Tam genişlik (2 uzun satır) */}
           <div className="about-top-lines">
-            <span className="about-line">
-              {t("about.line1")}
-              <div className="about-line-reveal"></div>
-            </span>
+            <span className="about-line">{t("about.line1")}</span>
+            <span className="about-line">{t("about.line2")}</span>
           </div>
 
-          {/* Alt satırlar - Görselin yanında */}
+          {/* Alt satırlar - Görselin yanında (3 kısa satır) */}
           <div className="about-bottom-lines">
-            <span className="about-line">{t("about.line2")}</span>
-            <span className="about-line about-line-indent">
-              {t("about.line3")}
-            </span>
-            <span className="about-line about-line-indent-2">
-              {t("about.line4")}
-            </span>
+            <span className="about-line">{t("about.line3")}</span>
+            <span className="about-line about-line-indent">{t("about.line4")}</span>
+            <span className="about-line about-line-indent-2">{t("about.line5")}</span>
           </div>
         </div>
       </section>
