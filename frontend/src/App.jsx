@@ -238,3 +238,20 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+// Bileklerim için dilediğin dilekler (ah-ah-ah)
+// Buzlardan gözükmüyo', mosmor tüm bilekler (ah-ah-ah)
+// Cebimde bi' resmin var, yanında da fişekler (ah-ah-ah)
+// Daha fazla ilaç yuttum sizden çok küçükken
+// Çok küçükken
+// Orospular için artık çok üzülmem
+// Mermiler süzülmez, hepsi senin yüzünden
+// Akıl sağlığım Sansar Salvo gibi gerçekten
+// Ağzımdan çıkar duman, bazen tekerlekten
+// Tek dostum ilaçlar, zor hapları terk etmem
+// Hit, hit, hit
+// Her iş hit, ah (yeah-ah)

@@ -147,13 +147,20 @@ body {
 .about-top-lines {
   width: 100%;
   margin-bottom: 0;
-  text-align: right;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .about-bottom-lines {
-  margin-left: 35%;
-  width: 65%;
-  text-align: right;
+  margin-left: 32%;
+  width: 55%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 40px;
 }
 
 .about-line {
@@ -170,11 +177,11 @@ body {
 }
 
 .about-line-indent {
-  padding-left: clamp(40px, 5vw, 80px);
+  padding-left: 0;
 }
 
 .about-line-indent-2 {
-  padding-left: clamp(45px, 5.5vw, 90px);
+  padding-left: 0;
 }
 
 .about-line-reveal {
