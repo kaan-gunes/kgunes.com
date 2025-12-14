@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import AboutCard from "./components/AboutCard";
 import CardStack3D from "./components/CardStack3D";
 import BeforeAfterSlider from "./components/BeforeAfterSlider";
+import InteractiveGrid from "./components/InteractiveGrid";
 import LoadingScreen from "./components/LoadingScreen";
 import "./index.css";
 
@@ -14,7 +15,6 @@ gsap.registerPlugin(ScrollTrigger);
 function App() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
-
   const heroImageRef = useRef(null);
   const selfieRef = useRef(null);
   const aboutTextRef = useRef(null);
@@ -23,41 +23,15 @@ function App() {
   const appRef = useRef(null);
 
   useEffect(() => {
-    // Tarayıcının scoll hatırlama özelliğini kapat
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-
-    // Scroll en başa ve kitle
-    if (isLoading) {
-      window.scrollTo(0, 0);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      // ScrollTrigger refresh gerekebilir
-      ScrollTrigger.refresh();
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
-    // Loading bitmeden animasyonları başlatma
-    if (isLoading) return;
-
-    // Layout'un oturduğundan emin olmak için refresh yap
-    ScrollTrigger.refresh();
-
     // Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       smoothWheel: true,
-      autoResize: true,
     });
 
-    // Lenis başlar başlamaz en tepeye git (Garanti)
-    lenis.scrollTo(0, { immediate: true });
-
+    // Lenis'i GSAP ScrollTrigger ile senkronize et
     lenis.on("scroll", ScrollTrigger.update);
 
     gsap.ticker.add((time) => {
@@ -87,7 +61,7 @@ function App() {
       tagline,
       { opacity: 0, y: 40, letterSpacing: "0.1em" },
       { opacity: 1, y: 0, letterSpacing: "0.01em", duration: 1.2, ease: "power3.out" },
-      "-=1.2"
+      "-=1.2" // Overlap with previous animation
     );
 
     // 3. Name: Gradient Reveal + Slide Up + Blur removal + Scale
@@ -109,7 +83,7 @@ function App() {
         duration: 2.5,
         ease: "expo.out"
       },
-      "-=1.0"
+      "-=1.0" // Start before tagline finishes
     );
 
     // Aşağıdan yukarıya gradyan fade efekti
@@ -136,9 +110,9 @@ function App() {
       }
     );
 
-    // Selfie parallax efekti
+    // Selfie parallax efekti - daha yavaş scroll (sticky effect)
     gsap.to(selfie, {
-      y: 200,
+      y: 200, // Daha fazla sticky efekt
       ease: "none",
       scrollTrigger: {
         trigger: ".about-section",
@@ -148,7 +122,7 @@ function App() {
       },
     });
 
-    // Text için sticky efekt
+    // Text için hafif sticky efekt (fotoğraftan daha az)
     gsap.to(aboutText, {
       y: 80,
       ease: "none",
@@ -160,11 +134,12 @@ function App() {
       },
     });
 
-    // Staggered Text Reveal Animation
+    // Staggered Text Reveal Animation - Blur to Sharp
     if (aboutText) {
       const textLines = aboutText.querySelectorAll(".about-line");
 
       if (textLines.length > 0) {
+        // Timeline ile sıralı animasyon
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: aboutText,
@@ -174,15 +149,25 @@ function App() {
           },
         });
 
+        // Her satırı sırayla animate et
         textLines.forEach((line, i) => {
           tl.fromTo(
             line,
-            { opacity: 0, filter: "blur(10px)" },
-            { opacity: 1, filter: "blur(0px)", duration: 1, ease: "expo.out" },
+            {
+              opacity: 0,
+              filter: "blur(10px)",
+            },
+            {
+              opacity: 1,
+              filter: "blur(0px)",
+              duration: 1,
+              ease: "expo.out",
+            },
             i * 0.2
           );
         });
 
+        // Uzun açıklama metni animasyonu
         const longDesc = aboutText.querySelector(".about-card-container");
         if (longDesc) {
           tl.fromTo(
@@ -195,27 +180,38 @@ function App() {
       }
     }
 
-    // Resolution scaling
+    // 1920px baz alınarak resolution scaling sistemi
+    // QHD ve daha büyük ekranlarda site 1920x1080'deki gibi görünsün
     const BASE_WIDTH = 1920;
+
     const applyResolutionScaling = () => {
       const viewportWidth = window.innerWidth;
-      const heroElement = document.querySelector('.hero');
-
-      if (!heroElement) return;
 
       if (viewportWidth > BASE_WIDTH) {
+        // 1920px'den büyük ekranlarda scale uygula
         const scale = viewportWidth / BASE_WIDTH;
-        heroElement.style.transform = `scale(${scale})`;
-        heroElement.style.transformOrigin = 'top left';
-        heroElement.style.width = `${BASE_WIDTH}px`;
-        document.body.style.height = `${heroElement.scrollHeight * scale}px`;
+
+        // Hero container'ı scale et
+        const heroElement = document.querySelector('.hero');
+        if (heroElement) {
+          heroElement.style.transform = `scale(${scale})`;
+          heroElement.style.transformOrigin = 'top left';
+          heroElement.style.width = `${BASE_WIDTH}px`;
+          // Scale sonrası yüksekliği düzelt
+          document.body.style.height = `${heroElement.scrollHeight * scale}px`;
+        }
       } else {
-        heroElement.style.transform = 'none';
-        heroElement.style.width = '100%';
-        document.body.style.height = 'auto';
+        // 1920px ve altında normal görüntüle
+        const heroElement = document.querySelector('.hero');
+        if (heroElement) {
+          heroElement.style.transform = 'none';
+          heroElement.style.width = '100%';
+          document.body.style.height = 'auto';
+        }
       }
     };
 
+    // İlk yüklemede ve resize'da uygula
     applyResolutionScaling();
     window.addEventListener('resize', applyResolutionScaling);
 
@@ -223,17 +219,14 @@ function App() {
       lenis.destroy();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       window.removeEventListener('resize', applyResolutionScaling);
-      gsap.ticker.remove(lenis.raf);
     };
-  }, [isLoading]);
+  }, []);
 
   return (
     <>
       <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
 
-      {/* 
-        InteractiveGrid Removed
-      */}
+      <InteractiveGrid isVisible={!isLoading} />
 
       <div
         ref={appRef}
@@ -283,7 +276,7 @@ function App() {
           </div>
         </section>
 
-        {/* Portfolio Section */}
+        {/* Portfolio Section - ABOUT'UN ALTINDA */}
         <CardStack3D />
 
         {/* Before/After Slider Section */}

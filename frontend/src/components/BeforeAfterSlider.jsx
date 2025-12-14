@@ -2,13 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import './BeforeAfterSlider.css';
 
 const BeforeAfterSlider = () => {
-    // State yerine Ref kullanıyoruz (Render loop'a girmemek için)
     const containerRef = useRef(null);
     const afterImageRef = useRef(null);
     const handleRef = useRef(null);
     const containerRectRef = useRef(null);
     const isDragging = useRef(false);
-    const rafRef = useRef(null);
 
     const updateRect = () => {
         if (containerRef.current) {
@@ -19,7 +17,7 @@ const BeforeAfterSlider = () => {
     useEffect(() => {
         updateRect();
         window.addEventListener('resize', updateRect);
-        window.addEventListener('scroll', updateRect);
+        window.addEventListener('scroll', updateRect, { passive: true });
         return () => {
             window.removeEventListener('resize', updateRect);
             window.removeEventListener('scroll', updateRect);
@@ -29,7 +27,6 @@ const BeforeAfterSlider = () => {
     const updateSliderStyles = (percentage) => {
         if (afterImageRef.current) {
             afterImageRef.current.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-            // will-change optimizasyonu CSS'den geliyor
         }
         if (handleRef.current) {
             handleRef.current.style.left = `${percentage}%`;
@@ -46,17 +43,9 @@ const BeforeAfterSlider = () => {
         const rect = containerRectRef.current;
         if (!rect) return;
 
-        if (rafRef.current) return;
-
-        rafRef.current = requestAnimationFrame(() => {
-            const x = clientX - rect.left;
-            const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-
-            // Direct DOM update (No React Render)
-            updateSliderStyles(percentage);
-
-            rafRef.current = null;
-        });
+        const x = clientX - rect.left;
+        const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        updateSliderStyles(percentage);
     };
 
     const handleMouseDown = () => {
@@ -64,22 +53,28 @@ const BeforeAfterSlider = () => {
         updateRect();
         document.body.style.cursor = 'ew-resize';
         document.body.style.userSelect = 'none';
-        if (afterImageRef.current) afterImageRef.current.style.willChange = 'clip-path';
-        if (handleRef.current) handleRef.current.style.willChange = 'left';
+
+        // GPU hızlandırma AÇ
+        if (afterImageRef.current) {
+            afterImageRef.current.style.willChange = 'clip-path';
+        }
+        if (handleRef.current) {
+            handleRef.current.style.willChange = 'left';
+        }
     };
 
     const handleMouseUp = () => {
         isDragging.current = false;
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
-        if (rafRef.current) {
-            cancelAnimationFrame(rafRef.current);
-            rafRef.current = null;
-        }
 
-        // Optimizations off
-        if (afterImageRef.current) afterImageRef.current.style.willChange = 'auto';
-        if (handleRef.current) handleRef.current.style.willChange = 'auto';
+        // GPU hızlandırma KAPAT (bellek tasarrufu)
+        if (afterImageRef.current) {
+            afterImageRef.current.style.willChange = 'auto';
+        }
+        if (handleRef.current) {
+            handleRef.current.style.willChange = 'auto';
+        }
     };
 
     useEffect(() => {
@@ -97,7 +92,6 @@ const BeforeAfterSlider = () => {
         return () => {
             window.removeEventListener('mousemove', handleGlobalMouseMove);
             window.removeEventListener('mouseup', handleGlobalMouseUp);
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
     }, []);
 

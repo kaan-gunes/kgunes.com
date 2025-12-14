@@ -62,14 +62,19 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
             y: isHovered ? 0 : 10
           }}
           transition={{ duration: 0.2 }}
-          className={`${isMobile ? 'text-xl' : isTablet ? 'text-3xl' : 'text-4xl'} font-bold text-white whitespace-nowrap`}
           style={{
             position: 'absolute',
-            top: isMobile ? '-40px' : isTablet ? '-50px' : '-55px',
+            top: isMobile ? '-45px' : isTablet ? '-55px' : '-65px',
             left: 0,
             pointerEvents: 'none',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            willChange: 'opacity, transform'
+            textShadow: '0 2px 15px rgba(0,0,0,0.6)',
+            willChange: 'opacity, transform',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+            fontSize: isMobile ? '1.5rem' : isTablet ? '2rem' : '2.5rem',
+            fontWeight: 600,
+            color: 'white',
+            whiteSpace: 'nowrap',
+            letterSpacing: '-0.02em',
           }}
         >
           {card.title}
@@ -238,15 +243,15 @@ const CardStack3D = ({ setCursorVariant }) => {
   return (
     <section style={{
       position: 'absolute',
-      top: 'calc(200vh + 650px)',
+      top: 'calc(200vh + 35vw)', // Responsive: vw-based offset
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
-      minHeight: '600px',
+      minHeight: '500px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      padding: '20px'
+      padding: 'clamp(10px, 2vw, 20px)'
     }}>
       {/* Kocaman Arka Plan Başlık */}
       <motion.h2

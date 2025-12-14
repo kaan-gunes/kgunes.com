@@ -1,15 +1,14 @@
 .before-after-section {
     position: absolute;
-    /* 300px eklendi (Daha aşağı) */
-    top: calc(200vh + 650px + 650px + 300px);
+    /* Responsive: vw-based offset */
+    top: calc(200vh + 35vw + 35vw + 20vw);
     left: 50%;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 5%;
+    padding: clamp(20px, 3vw, 40px) 5%;
     will-change: transform;
-    /* translateX(-50%) ile ortala, translateZ(0) ile GPU force et */
     transform: translateX(-50%) translateZ(0);
 }
 
@@ -17,9 +16,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Space-between yerine center */
-    gap: 80px;
-    /* Aralarındaki boşluk */
+    gap: clamp(30px, 5vw, 80px);
     max-width: 1400px;
     width: 100%;
 }
@@ -28,33 +25,27 @@
 .slider-left-content {
     flex: 0 1 auto;
     position: relative;
-    /* Logo için referans */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    /* gap: 30px; Logo absolute olduğu için gap'i kaldırdım veya azalttım */
     justify-content: center;
 }
 
 .ps-logo {
     position: absolute;
-    top: -100px;
-    /* Yazının üzerine taşı */
+    top: clamp(-60px, -6vw, -100px);
     left: 0;
-    width: 60px;
-    /* Biraz küçülttüm, çok büyük durmasın */
+    width: clamp(35px, 4vw, 60px);
     height: auto;
     filter: drop-shadow(0 4px 20px rgba(49, 168, 255, 0.3));
 }
 
 .slider-title {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-    font-size: clamp(4rem, 8vw, 7rem);
+    font-size: clamp(2rem, 6vw, 7rem);
     font-weight: 800;
-    /* Apple fontta bold yetmeyebilir */
     color: #fff;
     line-height: 1.1;
-    /* text-transform: uppercase; KALDIRILDI */
     letter-spacing: -0.02em;
 }
 
@@ -64,19 +55,15 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 400;
-    /* Regular */
     font-style: italic;
-    /* Italic */
 }
 
 /* Sağ Taraf - Slider */
 .slider-wrapper {
-    flex: 0 0 42%;
-    /* %36'dan %42'ye (DAHA BÜYÜK) */
+    flex: 0 0 clamp(250px, 42%, 600px);
     position: relative;
     aspect-ratio: 4/5;
-    border-radius: 16px;
-
+    border-radius: clamp(8px, 1vw, 16px);
     overflow: hidden;
     cursor: ew-resize;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
@@ -99,6 +86,7 @@
 
 .after-image {
     z-index: 2;
+    /* GPU optimizasyonları JS tarafından sürükleme sırasında açılacak */
 }
 
 /* Slider Handle */
@@ -171,4 +159,33 @@
 
 .after-label {
     left: 20px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .before-after-container {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .slider-left-content {
+        text-align: center;
+        align-items: center;
+    }
+
+    .ps-logo {
+        position: relative;
+        top: 0;
+        margin-bottom: 10px;
+    }
+
+    .slider-wrapper {
+        width: 90%;
+        flex: none;
+    }
+
+    .label {
+        padding: 6px 12px;
+        font-size: 10px;
+    }
 }
