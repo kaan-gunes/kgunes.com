@@ -8,6 +8,62 @@
   font-display: block;
 }
 
+@font-face {
+  font-family: "Halfre";
+  src: url("/halfre.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Axiforma";
+  src: url("/axiforma/Axiforma-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Axiforma";
+  src: url("/axiforma/Axiforma-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Axiforma";
+  src: url("/axiforma/Axiforma-Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Axiforma";
+  src: url("/axiforma/Axiforma-BoldItalic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Axiforma";
+  src: url("/axiforma/Axiforma-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Axiforma";
+  src: url("/axiforma/Axiforma-SemiBoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: block;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -78,7 +134,7 @@ body {
 .name {
   --mask-pos: -100%;
   position: absolute;
-  top: calc(100vh - 300px);
+  top: calc(100vh - 680px);
   left: 0;
   right: 0;
   width: 100%;
@@ -86,11 +142,12 @@ body {
   justify-content: center;
   align-items: baseline;
   gap: 40px;
-  font-family: "Aequitas", sans-serif;
+  font-family: "Halfre", sans-serif;
   font-size: clamp(120px, 18vw, 320px);
-  font-weight: bold;
+  font-weight: normal;
   letter-spacing: -0.02em;
-  line-height: 1;
+  line-height: 1.5;
+  padding-bottom: 40px;
   text-shadow: 0 0 15px rgba(13, 13, 13, 0.5);
   -webkit-mask-image: linear-gradient(90deg,
       black 0%,
@@ -154,7 +211,7 @@ body {
 }
 
 .about-bottom-lines {
-  margin-left: 32%;
+  margin-left: 37%;
   width: 55%;
   text-align: left;
   display: flex;
@@ -166,7 +223,7 @@ body {
 .about-line {
   display: block;
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+  font-family: "Axiforma", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     "SF Pro Text", system-ui, sans-serif;
   font-size: clamp(36px, 4.2vw, 72px);
   font-weight: 500;
@@ -176,12 +233,36 @@ body {
   will-change: transform, opacity, filter;
 }
 
+.about-line b,
+.about-line strong {
+  font-weight: 600;
+}
+
 .about-line-indent {
   padding-left: 0;
 }
 
 .about-line-indent-2 {
   padding-left: 0;
+}
+
+.about-long-description {
+  margin-left: 50%;
+  width: 40%;
+  margin-top: 150px;
+  padding-left: 0;
+  text-align: justify;
+  font-family: "Axiforma", sans-serif;
+  font-size: 22px;
+  font-weight: normal;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  text-wrap: pretty;
+}
+
+.about-long-description b,
+.about-long-description strong {
+  font-weight: 600;
 }
 
 .about-line-reveal {

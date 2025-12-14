@@ -1,0 +1,174 @@
+.before-after-section {
+    position: absolute;
+    /* 300px eklendi (Daha aşağı) */
+    top: calc(200vh + 650px + 650px + 300px);
+    left: 50%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 5%;
+    will-change: transform;
+    /* translateX(-50%) ile ortala, translateZ(0) ile GPU force et */
+    transform: translateX(-50%) translateZ(0);
+}
+
+.before-after-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Space-between yerine center */
+    gap: 80px;
+    /* Aralarındaki boşluk */
+    max-width: 1400px;
+    width: 100%;
+}
+
+/* Sol Taraf - PS Logo ve Yazı */
+.slider-left-content {
+    flex: 0 1 auto;
+    position: relative;
+    /* Logo için referans */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* gap: 30px; Logo absolute olduğu için gap'i kaldırdım veya azalttım */
+    justify-content: center;
+}
+
+.ps-logo {
+    position: absolute;
+    top: -100px;
+    /* Yazının üzerine taşı */
+    left: 0;
+    width: 60px;
+    /* Biraz küçülttüm, çok büyük durmasın */
+    height: auto;
+    filter: drop-shadow(0 4px 20px rgba(49, 168, 255, 0.3));
+}
+
+.slider-title {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    font-size: clamp(4rem, 8vw, 7rem);
+    font-weight: 800;
+    /* Apple fontta bold yetmeyebilir */
+    color: #fff;
+    line-height: 1.1;
+    /* text-transform: uppercase; KALDIRILDI */
+    letter-spacing: -0.02em;
+}
+
+.slider-title span {
+    background: linear-gradient(135deg, #31A8FF, #00D4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 400;
+    /* Regular */
+    font-style: italic;
+    /* Italic */
+}
+
+/* Sağ Taraf - Slider */
+.slider-wrapper {
+    flex: 0 0 42%;
+    /* %36'dan %42'ye (DAHA BÜYÜK) */
+    position: relative;
+    aspect-ratio: 4/5;
+    border-radius: 16px;
+
+    overflow: hidden;
+    cursor: ew-resize;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.slider-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+}
+
+.before-image {
+    z-index: 1;
+}
+
+.after-image {
+    z-index: 2;
+}
+
+/* Slider Handle */
+.slider-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.slider-button {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.slider-button:hover {
+    transform: scale(1.1);
+}
+
+.arrow {
+    font-size: 20px;
+    color: #000;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Labels */
+.label {
+    position: absolute;
+    bottom: 20px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 6px;
+    font-family: "Axiforma", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #fff;
+    z-index: 5;
+}
+
+.before-label {
+    right: 20px;
+}
+
+.after-label {
+    left: 20px;
+}

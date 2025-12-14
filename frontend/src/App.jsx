@@ -1,30 +1,63 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import AboutCard from "./components/AboutCard";
+import CardStack3D from "./components/CardStack3D";
+import BeforeAfterSlider from "./components/BeforeAfterSlider";
+import LoadingScreen from "./components/LoadingScreen";
 import "./index.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(true);
+
   const heroImageRef = useRef(null);
   const selfieRef = useRef(null);
   const aboutTextRef = useRef(null);
   const taglineRef = useRef(null);
   const nameRef = useRef(null);
+  const appRef = useRef(null);
 
   useEffect(() => {
+    // Tarayıcının scoll hatırlama özelliğini kapat
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    // Scroll en başa ve kitle
+    if (isLoading) {
+      window.scrollTo(0, 0);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      // ScrollTrigger refresh gerekebilir
+      ScrollTrigger.refresh();
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    // Loading bitmeden animasyonları başlatma
+    if (isLoading) return;
+
+    // Layout'un oturduğundan emin olmak için refresh yap
+    ScrollTrigger.refresh();
+
     // Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       smoothWheel: true,
+      autoResize: true,
     });
 
-    // Lenis'i GSAP ScrollTrigger ile senkronize et
+    // Lenis başlar başlamaz en tepeye git (Garanti)
+    lenis.scrollTo(0, { immediate: true });
+
     lenis.on("scroll", ScrollTrigger.update);
 
     gsap.ticker.add((time) => {
@@ -39,36 +72,44 @@ function App() {
     const tagline = taglineRef.current;
     const name = nameRef.current;
 
-    // Giriş animasyonları - sayfa yüklendiğinde
-    // Hero background fade in + zoom out
-    gsap.fromTo(
+    // Giriş animasyonları - Timeline ile sinematik açılış
+    const introTl = gsap.timeline();
+
+    // 1. Hero Background: Scale down + Fade in + Blur removal
+    introTl.fromTo(
       heroImage,
-      { opacity: 0, scale: 1.1 },
-      { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" }
+      { opacity: 0, scale: 1.2, filter: "blur(15px)" },
+      { opacity: 1, scale: 1, filter: "blur(0px)", duration: 2, ease: "power3.out" }
     );
 
-    gsap.fromTo(
+    // 2. Tagline: Slide up + Fade in (starts slightly before hero finishes)
+    introTl.fromTo(
       tagline,
-      { opacity: 0 },
-      { opacity: 1, duration: 1, ease: "power2.out", delay: 0.5 }
+      { opacity: 0, y: 40, letterSpacing: "0.1em" },
+      { opacity: 1, y: 0, letterSpacing: "0.01em", duration: 1.2, ease: "power3.out" },
+      "-=1.2"
     );
 
-    // KAAN GÜNEŞ - soldan sağa gradient mask ile opacity artışı + blur
-    gsap.fromTo(
+    // 3. Name: Gradient Reveal + Slide Up + Blur removal + Scale
+    introTl.fromTo(
       name,
       {
         opacity: 0,
+        y: 60,
+        scale: 0.95,
         "--mask-pos": "-100%",
-        filter: "blur(8px)"
+        filter: "blur(20px)"
       },
       {
         opacity: 1,
+        y: 0,
+        scale: 1,
         "--mask-pos": "100%",
         filter: "blur(0px)",
-        duration: 2.2,
-        ease: "expo.out",
-        delay: 0.6
-      }
+        duration: 2.5,
+        ease: "expo.out"
+      },
+      "-=1.0"
     );
 
     // Aşağıdan yukarıya gradyan fade efekti
@@ -95,9 +136,9 @@ function App() {
       }
     );
 
-    // Selfie parallax efekti - daha yavaş scroll (sticky effect)
+    // Selfie parallax efekti
     gsap.to(selfie, {
-      y: 200, // Daha fazla sticky efekt
+      y: 200,
       ease: "none",
       scrollTrigger: {
         trigger: ".about-section",
@@ -107,7 +148,7 @@ function App() {
       },
     });
 
-    // Text için hafif sticky efekt (fotoğraftan daha az)
+    // Text için sticky efekt
     gsap.to(aboutText, {
       y: 80,
       ease: "none",
@@ -119,12 +160,11 @@ function App() {
       },
     });
 
-    // Staggered Text Reveal Animation - Blur to Sharp
+    // Staggered Text Reveal Animation
     if (aboutText) {
       const textLines = aboutText.querySelectorAll(".about-line");
 
       if (textLines.length > 0) {
-        // Timeline ile sıralı animasyon
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: aboutText,
@@ -134,58 +174,48 @@ function App() {
           },
         });
 
-        // Her satırı sırayla animate et
         textLines.forEach((line, i) => {
           tl.fromTo(
             line,
-            {
-              opacity: 0,
-              filter: "blur(10px)",
-            },
-            {
-              opacity: 1,
-              filter: "blur(0px)",
-              duration: 1,
-              ease: "expo.out",
-            },
+            { opacity: 0, filter: "blur(10px)" },
+            { opacity: 1, filter: "blur(0px)", duration: 1, ease: "expo.out" },
             i * 0.2
           );
         });
+
+        const longDesc = aboutText.querySelector(".about-card-container");
+        if (longDesc) {
+          tl.fromTo(
+            longDesc,
+            { opacity: 0, y: 20, filter: "blur(5px)" },
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, ease: "power2.out" },
+            ">-=0.5"
+          );
+        }
       }
     }
 
-    // 1920px baz alınarak resolution scaling sistemi
-    // QHD ve daha büyük ekranlarda site 1920x1080'deki gibi görünsün
+    // Resolution scaling
     const BASE_WIDTH = 1920;
-
     const applyResolutionScaling = () => {
       const viewportWidth = window.innerWidth;
+      const heroElement = document.querySelector('.hero');
+
+      if (!heroElement) return;
 
       if (viewportWidth > BASE_WIDTH) {
-        // 1920px'den büyük ekranlarda scale uygula
         const scale = viewportWidth / BASE_WIDTH;
-
-        // Hero container'ı scale et
-        const heroElement = document.querySelector('.hero');
-        if (heroElement) {
-          heroElement.style.transform = `scale(${scale})`;
-          heroElement.style.transformOrigin = 'top left';
-          heroElement.style.width = `${BASE_WIDTH}px`;
-          // Scale sonrası yüksekliği düzelt
-          document.body.style.height = `${heroElement.scrollHeight * scale}px`;
-        }
+        heroElement.style.transform = `scale(${scale})`;
+        heroElement.style.transformOrigin = 'top left';
+        heroElement.style.width = `${BASE_WIDTH}px`;
+        document.body.style.height = `${heroElement.scrollHeight * scale}px`;
       } else {
-        // 1920px ve altında normal görüntüle
-        const heroElement = document.querySelector('.hero');
-        if (heroElement) {
-          heroElement.style.transform = 'none';
-          heroElement.style.width = '100%';
-          document.body.style.height = 'auto';
-        }
+        heroElement.style.transform = 'none';
+        heroElement.style.width = '100%';
+        document.body.style.height = 'auto';
       }
     };
 
-    // İlk yüklemede ve resize'da uygula
     applyResolutionScaling();
     window.addEventListener('resize', applyResolutionScaling);
 
@@ -193,65 +223,77 @@ function App() {
       lenis.destroy();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       window.removeEventListener('resize', applyResolutionScaling);
+      gsap.ticker.remove(lenis.raf);
     };
-  }, []);
+  }, [isLoading]);
 
   return (
-    <div className="hero">
-      {/* Background Image */}
-      <div ref={heroImageRef} className="hero-bg"></div>
+    <>
+      <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
 
-      {/* Top Text */}
-      <p ref={taglineRef} className="tagline">
-        <em>{t("tagline.line1")}</em> {t("tagline.line2")}
-      </p>
+      {/* 
+        InteractiveGrid Removed
+      */}
 
-      {/* Main Name */}
-      <h1 ref={nameRef} className="name">
-        <span className="first">Kaan</span>
-        <span className="last">Güneş</span>
-      </h1>
+      <div
+        ref={appRef}
+        className="hero"
+        style={{
+          opacity: isLoading ? 0 : 1,
+          transition: 'opacity 0.5s ease-out'
+        }}
+      >
+        {/* Background Image */}
+        <div ref={heroImageRef} className="hero-bg"></div>
 
-      {/* About Section */}
-      <section className="about-section">
-        <div ref={selfieRef} className="selfie-container">
-          <img src="/selfie.webp" alt="Kaan Güneş" className="selfie" />
-        </div>
+        {/* Top Text */}
+        <p ref={taglineRef} className="tagline">
+          <em>{t("tagline.line1")}</em> {t("tagline.line2")}
+        </p>
 
-        <div ref={aboutTextRef} className="about-text-wrapper">
-          {/* Üst satırlar - Tam genişlik (2 uzun satır) */}
-          <div className="about-top-lines">
-            <span className="about-line">{t("about.line1")}</span>
-            <span className="about-line">{t("about.line2")}</span>
+        {/* Main Name */}
+        <h1 ref={nameRef} className="name">
+          <span className="first">Kaan</span>
+          <span className="last">Güneş</span>
+        </h1>
+
+        {/* About Section */}
+        <section className="about-section">
+          <div ref={selfieRef} className="selfie-container">
+            <img src="/selfie.webp" alt="Kaan Güneş" className="selfie" />
           </div>
 
-          {/* Alt satırlar - Görselin yanında (3 kısa satır) */}
-          <div className="about-bottom-lines">
-            <span className="about-line">{t("about.line3")}</span>
-            <span className="about-line about-line-indent">{t("about.line4")}</span>
-            <span className="about-line about-line-indent-2">{t("about.line5")}</span>
+          <div ref={aboutTextRef} className="about-text-wrapper">
+            {/* Üst satırlar */}
+            <div className="about-top-lines">
+              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line1") }} />
+              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2") }} />
+              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2_sub") }} />
+            </div>
+
+            {/* Alt satırlar */}
+            <div className="about-bottom-lines">
+              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line3") }} />
+              <span className="about-line about-line-indent" dangerouslySetInnerHTML={{ __html: t("about.line4") }} />
+              <span className="about-line about-line-indent-2" dangerouslySetInnerHTML={{ __html: t("about.line5") }} />
+            </div>
+
+            {/* Uzun Açıklama Metni */}
+            <AboutCard />
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+
+        {/* Portfolio Section */}
+        <CardStack3D />
+
+        {/* Before/After Slider Section */}
+        <BeforeAfterSlider />
+
+      </div>
+    </>
   );
 }
 
 export default App;
 
 
-
-
-
-// Bileklerim için dilediğin dilekler (ah-ah-ah)
-// Buzlardan gözükmüyo', mosmor tüm bilekler (ah-ah-ah)
-// Cebimde bi' resmin var, yanında da fişekler (ah-ah-ah)
-// Daha fazla ilaç yuttum sizden çok küçükken
-// Çok küçükken
-// Orospular için artık çok üzülmem
-// Mermiler süzülmez, hepsi senin yüzünden
-// Akıl sağlığım Sansar Salvo gibi gerçekten
-// Ağzımdan çıkar duman, bazen tekerlekten
-// Tek dostum ilaçlar, zor hapları terk etmem
-// Hit, hit, hit
-// Her iş hit, ah (yeah-ah)

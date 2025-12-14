@@ -4,10 +4,12 @@
         "line2": "for companies and brands that decide to move forward."
     },
     "about": {
-        "line1": "I've been developing myself in digital design for 8 years.",
-        "line2": "Thanks to my passion for technology, I keep learning new things,",
+        "line1": "I've been developing myself in <i>digital design</i> for <b>8 years</b>.",
+        "line2": "Thanks to my passion for <b>technology</b>,",
+        "line2_sub": "I keep learning new things,",
         "line3": "developing projects in areas like",
-        "line4": "artificial intelligence and IoT",
-        "line5": "while pushing my limits."
+        "line4": "<b>artificial intelligence</b> and <b>IoT</b>",
+        "line5": "while pushing my limits.",
+        "long_description": "I am <b>Kaan Güneş</b>. I am a student of <b>Information Technologies at ITU MTAL</b>. I have been interested in <i>graphic design</i> for <b>over 8 years</b> and I crown this accumulation with professional level works. Apart from my designer identity, I am improving myself in areas such as <b>IoT</b> as a technology enthusiast aiming to contribute to science. In this context, I was entitled to participate in the <b>Erasmus</b> program held in the Netherlands in the autumn of 2025. Also, I have been very interested in the world of <b>Generative AI</b> since the day it first came out and I am developing myself in this direction as an independent field of expertise."
     }
 }

@@ -4,10 +4,29 @@
         "line2": "for companies and brands that decide to move forward."
     },
     "about": {
-        "line1": "8 yıldır dijital tasarım alanında kendimi geliştiriyorum.",
-        "line2": "Teknolojiye olan tutkum sayesinde yeni şeyler öğreniyor,",
-        "line3": "yapay zeka ve IoT gibi alanlarda",
+        "line1": "<b>8 yıldır</b> <i>dijital tasarım</i> alanında kendimi geliştiriyorum.",
+        "line2": "<b>Teknolojiye</b> olan tutkum sayesinde",
+        "line2_sub": "yeni şeyler öğreniyor,",
+        "line3": "<b>yapay zeka</b> ve <b>IoT</b> gibi alanlarda",
         "line4": "projeler geliştirmeye devam",
-        "line5": "ederek kendimi aşıyorum."
+        "line5": "ederek kendimi aşıyorum.",
+        "long_description": "Ben <b>Kaan Güneş</b>. <b>İTÜ MTAL Bilişim Teknolojileri</b> öğrencisiyim. <b>8 yılı aşkın süredir</b> grafik tasarımla ilgileniyorum. Tasarımcı kimliğimin dışında, bir teknoloji meraklısı olarak <b>IoT</b> gibi alanlarda kendimi geliştiriyorum. Bu kapsamda 2025'te Hollanda'da gerçekleşmiş olan <b>Erasmus</b> programına katılım sağlamaya hak kazandım. Ayrıca <b>Generative AI</b> dünyasına ilk çıktığı günden beri büyük bir ilgi duyuyor ve bağımsız bir uzmanlık alanı olarak kendimi bu yönde geliştiriyorum."
+    },
+    "cards": {
+        "title": "PORTFOLIO",
+        "subtitle": "SEÇİLMİŞ İŞLER 2024-2025",
+        "comingSoon": "YAKINDA",
+        "bottomExplore": "KEŞFETMEK İÇİN KAYDIRIN",
+        "projectListCount": "{{count}} Proje",
+        "exploreProject": "Projeyi İncele",
+        "hoodie": "Hoodie Tasarımları",
+        "cd": "Albüm Kapakları",
+        "sf_logo": "SF Logo Çalışmaları",
+        "sf_st": "SF Kurumsal Kimlik"
+    },
+    "project": {
+        "vectorDesign": "Vektörel Tasarım",
+        "mannequinView": "Manken Görünümü",
+        "defaultDescription": "{{category}} kategorisindeki {{project}} projesi."
     }
 }
