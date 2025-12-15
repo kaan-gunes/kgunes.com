@@ -1,8 +1,9 @@
 import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import CardDetailView from './CardDetailView';
 
 const PROJECT_DATA = [
-  { id: 1, title: "Logolar", image: "/images/CARDS/sf_logo_card.webp" },
+  { id: 1, title: "Logolar", image: "/images/logo/kovak.webp" },//images/CARDS/sf_logo_card.webp
   { id: 2, title: "Giyim Tasarımaları", image: "/images/CARDS/hoodie_card.webp" },
   { id: 3, title: "Afişler", image: "/images/CARDS/cd_card.webp" },
   { id: 4, title: "Sosyal Medya", image: "/images/CARDS/sf_st_card.webp" },
@@ -17,13 +18,33 @@ const smoothSpring = {
 };
 
 // Memoized Single Card Component with ForwardRef
-const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTablet, totalCards }, ref) => {
-  // Z-index calculation
-  const zIndex = isHovered ? 100 : totalCards - index;
+const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTablet, totalCards, onCardClick }, ref) => {
+  // Z-index: overlap olduğu için sağdaki (yüksek index) kartlar üstte olmalı
+  const zIndex = isHovered ? 100 : index;
+
+  const activate = () => onCardClick?.(card.id);
 
   return (
     <div
       ref={ref}
+      role="button"
+      tabIndex={0}
+      aria-label={`${card.title} detaylarını aç`}
+      onPointerUp={(e) => {
+        e.stopPropagation();
+        activate();
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        activate();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          activate();
+        }
+      }}
       style={{
         width: isMobile ? 200 : isTablet ? 300 : 380,
         height: isMobile ? 280 : isTablet ? 420 : 530,
@@ -32,7 +53,9 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
         position: 'relative',
         zIndex,
         transformStyle: 'preserve-3d',
-        transform: `translateZ(${-index * 80}px)`,
+        transform: 'translateZ(0px)',
+        outline: 'none',
+        touchAction: 'manipulation',
       }}
     >
       <motion.div
@@ -137,8 +160,10 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
 
 const CardStack3D = ({ setCursorVariant }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [selectedCardId, setSelectedCardId] = useState(null);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const containerRef = useRef(null);
+  const detailContainerRef = useRef(null);
   const cardRefs = useRef([]);
 
   // Global mouse takibi - 3D parallax efekti için
@@ -241,82 +266,94 @@ const CardStack3D = ({ setCursorVariant }) => {
   }, []);
 
   return (
-    <section style={{
-      position: 'absolute',
-      top: 'calc(200vh + 35vw)', // Responsive: vw-based offset
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: '100%',
-      minHeight: '500px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: 'clamp(10px, 2vw, 20px)'
-    }}>
-      {/* Kocaman Arka Plan Başlık */}
-      <motion.h2
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.08 }}
-        transition={{ duration: 1 }}
-        style={{
-          position: 'absolute',
-          top: '10%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          fontSize: 'clamp(120px, 20vw, 280px)',
-          fontWeight: 900,
-          letterSpacing: '0.02em',
-          color: 'white',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-          zIndex: 0,
-          userSelect: 'none',
-        }}
-      >
-        Çalışmalarım
-      </motion.h2>
-
-      {/* Kart Destesi */}
-      <motion.div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          perspective: '2000px',
-          zIndex: 1,
-          marginTop: '150px',
-          willChange: 'transform',
-          transform: 'translateZ(0)',
-        }}
-      >
-        <motion.div
-          ref={containerRef}
-          onMouseMove={handleContainerMouseMove}
-          onMouseLeave={() => setHoveredIndex(null)}
+    <>
+      <section style={{
+        position: 'absolute',
+        top: 'calc(200vh + 35vw)', // Responsive: vw-based offset
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        minHeight: '500px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: 'clamp(10px, 2vw, 20px)'
+      }}>
+        {/* Kocaman Arka Plan Başlık */}
+        <motion.h2
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.08 }}
+          transition={{ duration: 1 }}
           style={{
-            display: 'flex',
-            transformStyle: 'preserve-3d',
-            rotateX,
-            rotateY,
-            transformOrigin: 'center center',
+            position: 'absolute',
+            top: '10%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: 'clamp(120px, 20vw, 280px)',
+            fontWeight: 900,
+            letterSpacing: '0.02em',
+            color: 'white',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 0,
+            userSelect: 'none',
           }}
         >
-          {PROJECT_DATA.map((card, index) => (
-            <CardItem
-              key={card.id}
-              ref={el => cardRefs.current[index] = el}
-              card={card}
-              index={index}
-              isHovered={hoveredIndex === index}
-              isMobile={isMobile}
-              isTablet={isTablet}
-              totalCards={PROJECT_DATA.length}
-            />
-          ))}
+          Çalışmalarım
+        </motion.h2>
+
+        {/* Kart Destesi */}
+        <motion.div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            perspective: '2000px',
+            zIndex: 1,
+            marginTop: '150px',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
+        >
+          <motion.div
+            ref={containerRef}
+            onMouseMove={handleContainerMouseMove}
+            onMouseLeave={() => setHoveredIndex(null)}
+            style={{
+              display: 'flex',
+              transformStyle: 'preserve-3d',
+              rotateX,
+              rotateY,
+              transformOrigin: 'center center',
+            }}
+          >
+            {PROJECT_DATA.map((card, index) => (
+              <CardItem
+                key={card.id}
+                ref={el => cardRefs.current[index] = el}
+                card={card}
+                index={index}
+                isHovered={hoveredIndex === index}
+                isMobile={isMobile}
+                isTablet={isTablet}
+                totalCards={PROJECT_DATA.length}
+                onCardClick={setSelectedCardId}
+              />
+            ))}
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </section>
+      </section>
+
+      <AnimatePresence>
+        {selectedCardId && (
+          <CardDetailView
+            cardId={selectedCardId}
+            onClose={() => setSelectedCardId(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

@@ -130,13 +130,9 @@ const CardDetailView = ({ cardId, onClose }) => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
 
-    // Body scroll'u kilitle
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, []);
+    const containerRef = React.useRef(null);
+
+    
 
     if (!cardInfo) return null;
 
@@ -152,12 +148,14 @@ const CardDetailView = ({ cardId, onClose }) => {
             onClick={onClose}
         >
             <motion.div
+                ref={containerRef}
                 className="card-detail-container"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 onClick={(e) => e.stopPropagation()}
+                data-lenis-prevent
             >
                 {/* Header */}
                 <div className="card-detail-header">
