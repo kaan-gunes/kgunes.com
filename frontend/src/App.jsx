@@ -8,6 +8,8 @@ import CardStack3D from "./components/CardStack3D";
 import BeforeAfterSlider from "./components/BeforeAfterSlider";
 import InteractiveGrid from "./components/InteractiveGrid";
 import LoadingScreen from "./components/LoadingScreen";
+import LanguageToggle from "./components/LanguageToggle";
+import ContactSection from "./components/ContactSection";
 import "./index.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -23,6 +25,12 @@ function App() {
   const appRef = useRef(null);
 
   useEffect(() => {
+    // Sayfa yüklendiğinde en başa scroll
+    window.scrollTo(0, 0);
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
     // Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.2,
@@ -185,30 +193,30 @@ function App() {
     const BASE_WIDTH = 1920;
 
     const applyResolutionScaling = () => {
-/*       const viewportWidth = window.innerWidth;
-
-      if (viewportWidth > BASE_WIDTH) {
-        // 1920px'den büyük ekranlarda scale uygula
-        const scale = viewportWidth / BASE_WIDTH;
-
-        // Hero container'ı scale et
-        const heroElement = document.querySelector('.hero');
-        if (heroElement) {
-          heroElement.style.transform = `scale(${scale})`;
-          heroElement.style.transformOrigin = 'top left';
-          heroElement.style.width = `${BASE_WIDTH}px`;
-          // Scale sonrası yüksekliği düzelt
-          document.body.style.height = `${heroElement.scrollHeight * scale}px`;
-        }
-      } else {
-        // 1920px ve altında normal görüntüle
-        const heroElement = document.querySelector('.hero');
-        if (heroElement) {
-          heroElement.style.transform = 'none';
-          heroElement.style.width = '100%';
-          document.body.style.height = 'auto';
-        }
-      } */
+      /*       const viewportWidth = window.innerWidth;
+      
+            if (viewportWidth > BASE_WIDTH) {
+              // 1920px'den büyük ekranlarda scale uygula
+              const scale = viewportWidth / BASE_WIDTH;
+      
+              // Hero container'ı scale et
+              const heroElement = document.querySelector('.hero');
+              if (heroElement) {
+                heroElement.style.transform = `scale(${scale})`;
+                heroElement.style.transformOrigin = 'top left';
+                heroElement.style.width = `${BASE_WIDTH}px`;
+                // Scale sonrası yüksekliği düzelt
+                document.body.style.height = `${heroElement.scrollHeight * scale}px`;
+              }
+            } else {
+              // 1920px ve altında normal görüntüle
+              const heroElement = document.querySelector('.hero');
+              if (heroElement) {
+                heroElement.style.transform = 'none';
+                heroElement.style.width = '100%';
+                document.body.style.height = 'auto';
+              }
+            } */
     };
 
     // İlk yüklemede ve resize'da uygula
@@ -225,6 +233,8 @@ function App() {
   return (
     <>
       <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
+
+      <LanguageToggle />
 
       <InteractiveGrid isVisible={!isLoading} />
 
@@ -281,6 +291,9 @@ function App() {
 
         {/* Before/After Slider Section */}
         <BeforeAfterSlider />
+
+        {/* Contact Section */}
+        <ContactSection />
 
       </div>
     </>

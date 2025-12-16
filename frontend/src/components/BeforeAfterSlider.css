@@ -1,7 +1,7 @@
 .before-after-section {
     position: absolute;
-    /* Responsive: vw-based offset */
-    top: calc(200vh + 35vw + 35vw + 20vw);
+    /* Responsive: vw-based offset - kartların altında */
+    top: calc(200vh + 35vw + 55vw + 25vw);
     left: 50%;
     width: 100%;
     display: flex;
@@ -163,6 +163,10 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+    .before-after-section {
+        top: calc(200vh + 25vw + 190vw);
+    }
+
     .before-after-container {
         flex-direction: column;
         gap: 30px;

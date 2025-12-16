@@ -1,7 +1,7 @@
 {
     "tagline": {
-        "line1": "A Creative Partner",
-        "line2": "for companies and brands that decide to move forward."
+        "line1": "Designer",
+        "line2": "& Tech Enthusiast"
     },
     "about": {
         "line1": "I've been developing myself in <i>digital design</i> for <b>8 years</b>.",
@@ -10,6 +10,28 @@
         "line3": "developing projects in areas like",
         "line4": "<b>artificial intelligence</b> and <b>IoT</b>",
         "line5": "while pushing my limits.",
-        "long_description": "I am <b>Kaan Güneş</b>. I am a student of <b>Information Technologies at ITU MTAL</b>. I have been interested in <i>graphic design</i> for <b>over 8 years</b> and I crown this accumulation with professional level works. Apart from my designer identity, I am improving myself in areas such as <b>IoT</b> as a technology enthusiast aiming to contribute to science. In this context, I was entitled to participate in the <b>Erasmus</b> program held in the Netherlands in the autumn of 2025. Also, I have been very interested in the world of <b>Generative AI</b> since the day it first came out and I am developing myself in this direction as an independent field of expertise."
+        "long_description": "I am <b>Kaan Güneş</b>. I'm a student at <b>ITU MTAL Information Technologies</b>. I've been into <i>graphic design</i> for <b>over 8 years</b>. Beyond my designer identity, I'm improving myself in areas like <b>IoT</b> as a tech enthusiast. In this context, I qualified to join the <b>Erasmus</b> program held in the Netherlands in 2025. I've also been deeply interested in the <b>Generative AI</b> world since day one, developing myself in this direction as an independent expertise."
+    },
+    "cards": {
+        "title": "My Works",
+        "logos": "Logos",
+        "clothing": "Clothing Designs",
+        "posters": "Posters",
+        "socialMedia": "Social Media"
+    },
+    "slider": {
+        "title1": "Turn Your",
+        "title2": "Dreams Into Reality",
+        "before": "BEFORE",
+        "after": "AFTER"
+    },
+    "project": {
+        "vectorDesign": "Vector Design",
+        "mannequinView": "Mannequin View",
+        "tapToFlip": "Tap to flip"
+    },
+    "contact": {
+        "title": "Keep in Touch",
+        "aboutMe": "About Me"
     }
 }

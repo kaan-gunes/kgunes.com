@@ -1,0 +1,219 @@
+.contact-section {
+    position: relative;
+    width: 100%;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
+    margin-top: clamp(100px, 15vw, 200px);
+}
+
+.contact-glass {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(60px, 8vw, 120px) clamp(80px, 12vw, 200px);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 32px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contact-glass:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.contact-title {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-size: clamp(36px, 7vw, 80px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin-bottom: clamp(40px, 5vw, 70px);
+    text-align: center;
+}
+
+.social-links {
+    display: flex;
+    gap: clamp(24px, 4vw, 48px);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.social-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: clamp(24px, 3vw, 40px);
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.social-icon {
+    width: clamp(48px, 6vw, 72px);
+    height: clamp(48px, 6vw, 72px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-icon svg {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.social-link:hover .social-icon svg {
+    transform: scale(1.1);
+}
+
+.social-name {
+    font-family: "Axiforma", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.social-link:hover .social-name {
+    opacity: 1;
+}
+
+/* Email row - horizontal display below social links */
+.email-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: clamp(20px, 3vw, 32px);
+    padding: 16px 32px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+}
+
+.email-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.email-row .social-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.email-text {
+    font-family: "Axiforma", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.contact-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    margin: clamp(30px, 4vw, 50px) 0;
+}
+
+.about-link {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.about-link::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.about-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.about-link:hover::after {
+    transform: scaleX(1);
+}
+
+.copyright {
+    margin-top: clamp(40px, 5vw, 60px);
+    font-family: "Axiforma", sans-serif;
+    font-size: clamp(12px, 1vw, 14px);
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.02em;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .contact-section {
+        padding: 40px 20px;
+        min-height: auto;
+        margin-top: 40px;
+    }
+
+    .contact-glass {
+        padding: 40px 30px;
+        border-radius: 20px;
+    }
+
+    .social-links {
+        gap: 12px;
+    }
+
+    .social-link {
+        padding: 16px;
+    }
+
+    .social-name {
+        display: none;
+    }
+}

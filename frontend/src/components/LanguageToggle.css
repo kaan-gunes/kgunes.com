@@ -1,0 +1,96 @@
+.language-toggle {
+    position: fixed;
+    top: clamp(20px, 3vw, 40px);
+    right: clamp(20px, 3vw, 50px);
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 0;
+
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 4px;
+
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.language-toggle:hover {
+    background: rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Sliding indicator */
+.lang-slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+/* Slider position based on language */
+.language-toggle.tr .lang-slider {
+    transform: translateX(100%);
+}
+
+.language-toggle.en .lang-slider {
+    transform: translateX(0);
+}
+
+.lang-option {
+    position: relative;
+    z-index: 1;
+    padding: 8px 14px;
+    font-family: "Axiforma", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-size: clamp(12px, 1vw, 14px);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.3s ease;
+}
+
+.lang-option.active {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Hover effect */
+.language-toggle:hover .lang-option:not(.active) {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Click animation */
+.language-toggle:active {
+    transform: scale(0.97);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .language-toggle {
+        top: 15px;
+        right: 15px;
+        padding: 3px;
+    }
+
+    .lang-slider {
+        top: 3px;
+        left: 3px;
+        width: calc(50% - 3px);
+        height: calc(100% - 6px);
+    }
+
+    .lang-option {
+        padding: 6px 10px;
+    }
+}

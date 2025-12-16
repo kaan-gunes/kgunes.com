@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import './CardDetailView.css';
 
 // Kart ID -> Klasör eşleşmesi
 const CARD_FOLDERS = {
-    1: { folder: 'logo', title: 'Logolar' },
-    2: { folder: 'clothing', title: 'Giyim Tasarımları' },
-    3: { folder: 'irl', title: 'Afişler' },
-    4: { folder: 'sosyalmedya', title: 'Sosyal Medya' },
+    1: { folder: 'logo', titleKey: 'cards.logos' },
+    2: { folder: 'clothing', titleKey: 'cards.clothing' },
+    3: { folder: 'irl', titleKey: 'cards.posters' },
+    4: { folder: 'sosyalmedya', titleKey: 'cards.socialMedia' },
 };
 
 // Görseller - her klasör için hardcoded (performans için)
@@ -17,17 +18,15 @@ const GALLERY_IMAGES = {
         'itu sf.webp', 'ituspor.webp', 'kage logo.webp', 'kovak.webp', 'notmatix.webp'
     ],
     clothing: [
-        // Manken görselleri (vektörelsiz olanlar + vektöreli olanlar)
+        // Manken görselleri + vektörel karşılıkları
         { mannequin: 'infinitech.webp', vector: 'infinitech vektorel.webp' },
         { mannequin: 'itu basket forma 1.webp', vector: 'itu basket forma 1 vektorel.webp' },
         { mannequin: 'itu basket forma 2.webp', vector: 'itu basket forma 2 vektorel.webp' },
         { mannequin: 'itu forma 1.webp', vector: 'itu forma 1 vektorel.webp' },
         { mannequin: 'itu hoodie 1.webp', vector: 'itu hoodie 1 vektrorel.webp' },
         { mannequin: 'itu hoodie 2.webp', vector: 'itu hoodie 2 vektorel.webp' },
+        { mannequin: 'itu hoodie 3.webp', vector: 'itu hoodie 3 vektorel.webp' },
         { mannequin: 'itu tshirt 1.webp', vector: 'itu tshirt 1 vektorel.webp' },
-        { single: 'itu basket forma 2.1.webp' },
-        { single: 'itu hoodie 3.webp' },
-        { single: 'mezun hoodie 1 vektrorel.webp' },
     ],
     irl: [
         'afis_sf.webp', 'cd.webp', 'cd_kapak.webp', 'erasmus.webp',
@@ -89,34 +88,89 @@ const GalleryImage = ({ src, alt, onClick, isClothing, showVector }) => {
     );
 };
 
-// Clothing için özel görsel komponenti
-const ClothingImage = ({ item, basePath }) => {
+// Clothing için özel görsel komponenti - blur crossfade animasyonu
+const ClothingImage = ({ item, basePath, t }) => {
     const [showVector, setShowVector] = useState(false);
-
-    if (item.single) {
-        return (
-            <GalleryImage
-                src={`${basePath}/${item.single}`}
-                alt={item.single}
-                isClothing={false}
-            />
-        );
-    }
-
-    const currentImage = showVector ? item.vector : item.mannequin;
+    const [mannequinLoaded, setMannequinLoaded] = useState(false);
+    const [vectorLoaded, setVectorLoaded] = useState(false);
 
     return (
-        <GalleryImage
-            src={`${basePath}/${currentImage}`}
-            alt={currentImage}
+        <motion.div
+            className="clothing-crossfade-container"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
             onClick={() => setShowVector(!showVector)}
-            isClothing={true}
-            showVector={showVector}
-        />
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+        >
+            {/* Mannequin Image */}
+            <motion.div
+                className="clothing-image-layer"
+                animate={{
+                    opacity: showVector ? 0 : 1,
+                    scale: showVector ? 0.95 : 1,
+                    filter: showVector ? 'blur(8px)' : 'blur(0px)'
+                }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            >
+                <img
+                    src={`${basePath}/${item.mannequin}`}
+                    alt={item.mannequin}
+                    onLoad={() => setMannequinLoaded(true)}
+                    style={{ opacity: mannequinLoaded ? 1 : 0 }}
+                    draggable="false"
+                />
+                {!mannequinLoaded && (
+                    <div className="skeleton-loader">
+                        <div className="skeleton-shimmer"></div>
+                    </div>
+                )}
+            </motion.div>
+
+            {/* Vector Image */}
+            <motion.div
+                className="clothing-image-layer clothing-vector-layer"
+                animate={{
+                    opacity: showVector ? 1 : 0,
+                    scale: showVector ? 1 : 1.05,
+                    filter: showVector ? 'blur(0px)' : 'blur(8px)'
+                }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            >
+                <img
+                    src={`${basePath}/${item.vector}`}
+                    alt={item.vector}
+                    onLoad={() => setVectorLoaded(true)}
+                    style={{ opacity: vectorLoaded ? 1 : 0 }}
+                    draggable="false"
+                />
+                {!vectorLoaded && showVector && (
+                    <div className="skeleton-loader">
+                        <div className="skeleton-shimmer"></div>
+                    </div>
+                )}
+            </motion.div>
+
+            {/* Label */}
+            <div className={`clothing-mode-label ${showVector ? 'vector-mode' : 'mannequin-mode'}`}>
+                <span>{showVector ? t('project.vectorDesign') : t('project.mannequinView')}</span>
+            </div>
+
+            {/* Tap hint */}
+            <motion.div
+                className="tap-hint"
+                animate={{ opacity: showVector ? 0 : 1 }}
+                transition={{ duration: 0.2 }}
+            >
+                <span>{t('project.tapToFlip')}</span>
+            </motion.div>
+        </motion.div>
     );
 };
 
 const CardDetailView = ({ cardId, onClose }) => {
+    const { t } = useTranslation();
     const cardInfo = CARD_FOLDERS[cardId];
     const basePath = `/images/${cardInfo?.folder}`;
     const images = GALLERY_IMAGES[cardInfo?.folder] || [];
@@ -132,7 +186,7 @@ const CardDetailView = ({ cardId, onClose }) => {
 
     const containerRef = React.useRef(null);
 
-    
+
 
     if (!cardInfo) return null;
 
@@ -159,7 +213,7 @@ const CardDetailView = ({ cardId, onClose }) => {
             >
                 {/* Header */}
                 <div className="card-detail-header">
-                    <h2>{cardInfo.title}</h2>
+                    <h2>{t(cardInfo.titleKey)}</h2>
                     <button className="close-button" onClick={onClose}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 6L6 18M6 6l12 12" />
@@ -172,7 +226,7 @@ const CardDetailView = ({ cardId, onClose }) => {
                     {isClothing ? (
                         // Clothing özel: manken/vektörel toggle
                         images.map((item, index) => (
-                            <ClothingImage key={index} item={item} basePath={basePath} />
+                            <ClothingImage key={index} item={item} basePath={basePath} t={t} />
                         ))
                     ) : (
                         // Normal galeri

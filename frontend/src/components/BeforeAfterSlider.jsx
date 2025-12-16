@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './BeforeAfterSlider.css';
 
 const BeforeAfterSlider = () => {
+    const { t } = useTranslation();
     const containerRef = useRef(null);
     const afterImageRef = useRef(null);
     const handleRef = useRef(null);
@@ -109,8 +111,8 @@ const BeforeAfterSlider = () => {
                         className="ps-logo"
                     />
                     <h2 className="slider-title">
-                        Hayalini<br />
-                        <span>Gerçeğe Çevir</span>
+                        {t('slider.title1')}<br />
+                        <span>{t('slider.title2')}</span>
                     </h2>
                 </div>
 
@@ -155,8 +157,8 @@ const BeforeAfterSlider = () => {
                     </div>
 
                     {/* Labels */}
-                    <span className="label before-label">ÖNCE</span>
-                    <span className="label after-label">SONRA</span>
+                    <span className="label before-label">{t('slider.before')}</span>
+                    <span className="label after-label">{t('slider.after')}</span>
                 </div>
             </div>
         </section>

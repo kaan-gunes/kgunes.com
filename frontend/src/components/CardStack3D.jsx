@@ -1,12 +1,13 @@
 import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence, useScroll } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import CardDetailView from './CardDetailView';
 
 const PROJECT_DATA = [
-  { id: 1, title: "Logolar", image: "/images/logo/kovak.webp" },//images/CARDS/sf_logo_card.webp
-  { id: 2, title: "Giyim Tasarımaları", image: "/images/CARDS/hoodie_card.webp" },
-  { id: 3, title: "Afişler", image: "/images/CARDS/cd_card.webp" },
-  { id: 4, title: "Sosyal Medya", image: "/images/CARDS/sf_st_card.webp" },
+  { id: 1, titleKey: "cards.logos", image: "/images/logo/kovak.webp" },
+  { id: 2, titleKey: "cards.clothing", image: "/images/CARDS/hoodie_card.webp" },
+  { id: 3, titleKey: "cards.posters", image: "/images/CARDS/cd_card.webp" },
+  { id: 4, titleKey: "cards.socialMedia", image: "/images/CARDS/sf_st_card.webp" },
 ];
 
 // Ultra smooth spring konfigürasyonu
@@ -17,10 +18,98 @@ const smoothSpring = {
   mass: 0.8,
 };
 
-// Memoized Single Card Component with ForwardRef
-const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTablet, totalCards, onCardClick }, ref) => {
-  // Z-index: overlap olduğu için sağdaki (yüksek index) kartlar üstte olmalı
+// ============================================
+// MOBİL KART - 2x2 Grid için basit, parallax destekli
+// ============================================
+const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress }) => {
+  const title = t(card.titleKey);
+  const isTopRow = index < 2;
+
+  // Üst satır kartları scroll ile yamulur
+  const rotateX = useTransform(
+    scrollProgress,
+    [0, 0.3, 0.6],
+    isTopRow ? [0, -6, -12] : [0, 0, 0]
+  );
+
+  const y = useTransform(
+    scrollProgress,
+    [0, 0.6],
+    isTopRow ? [0, -15] : [0, 0]
+  );
+
+  return (
+    <motion.div
+      role="button"
+      tabIndex={0}
+      aria-label={`${title} detaylarını aç`}
+      onClick={() => onCardClick?.(card.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onCardClick?.(card.id);
+        }
+      }}
+      style={{
+        width: '100%',
+        aspectRatio: '3/4',
+        cursor: 'pointer',
+        position: 'relative',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        background: 'rgba(20,20,25,1)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        rotateX,
+        y,
+        transformPerspective: 1000,
+        transformOrigin: 'center bottom',
+      }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {/* Title overlay */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: '16px 12px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+        zIndex: 2,
+      }}>
+        <h3 style={{
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+          fontSize: 'clamp(14px, 4vw, 18px)',
+          fontWeight: 600,
+          color: 'white',
+          margin: 0,
+        }}>
+          {title}
+        </h3>
+      </div>
+
+      <img
+        src={card.image}
+        alt={title}
+        loading="eager"
+        draggable="false"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          pointerEvents: 'none',
+        }}
+      />
+    </motion.div>
+  );
+});
+
+// ============================================
+// DESKTOP KART - 3D efektli
+// ============================================
+const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, totalCards, onCardClick, t }, ref) => {
   const zIndex = isHovered ? 100 : index;
+  const title = t(card.titleKey);
 
   const activate = () => onCardClick?.(card.id);
 
@@ -29,7 +118,7 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
       ref={ref}
       role="button"
       tabIndex={0}
-      aria-label={`${card.title} detaylarını aç`}
+      aria-label={`${title} detaylarını aç`}
       onPointerUp={(e) => {
         e.stopPropagation();
         activate();
@@ -46,9 +135,9 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
         }
       }}
       style={{
-        width: isMobile ? 200 : isTablet ? 300 : 380,
-        height: isMobile ? 280 : isTablet ? 420 : 530,
-        marginLeft: index === 0 ? 0 : isMobile ? -30 : -70,
+        width: isTablet ? 300 : 380,
+        height: isTablet ? 420 : 530,
+        marginLeft: index === 0 ? 0 : -70,
         cursor: 'pointer',
         position: 'relative',
         zIndex,
@@ -87,23 +176,23 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
           transition={{ duration: 0.2 }}
           style={{
             position: 'absolute',
-            top: isMobile ? '-45px' : isTablet ? '-55px' : '-65px',
+            top: isTablet ? '-55px' : '-65px',
             left: 0,
             pointerEvents: 'none',
             textShadow: '0 2px 15px rgba(0,0,0,0.6)',
             willChange: 'opacity, transform',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
-            fontSize: isMobile ? '1.5rem' : isTablet ? '2rem' : '2.5rem',
+            fontSize: isTablet ? '2rem' : '2.5rem',
             fontWeight: 600,
             color: 'white',
             whiteSpace: 'nowrap',
             letterSpacing: '-0.02em',
           }}
         >
-          {card.title}
+          {title}
         </motion.h3>
 
-        {/* Dark Overlay (Brightness Replacement) */}
+        {/* Dark Overlay */}
         <motion.div
           className="card-overlay"
           animate={{
@@ -158,30 +247,45 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isMobile, isTa
   );
 }));
 
+// ============================================
+// ANA BİLEŞEN
+// ============================================
 const CardStack3D = ({ setCursorVariant }) => {
+  const { t } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const containerRef = useRef(null);
-  const detailContainerRef = useRef(null);
+  const sectionRef = useRef(null);
   const cardRefs = useRef([]);
 
-  // Global mouse takibi - 3D parallax efekti için
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 1024;
+
+  // Mobil scroll parallax
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Desktop mouse tracking
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
   const springConfig = { damping: 40, stiffness: 100, mass: 0.5 };
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), springConfig);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-12, 12]), springConfig);
 
+  // Mobilde mouse tracking bypass
   useEffect(() => {
+    if (isMobile) return;
+
     const handleMouseMove = (e) => {
       mouseX.set((e.clientX / window.innerWidth) - 0.5);
       mouseY.set((e.clientY / window.innerHeight) - 0.5);
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isMobile]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -190,18 +294,14 @@ const CardStack3D = ({ setCursorVariant }) => {
   }, []);
 
   useEffect(() => {
-    setCursorVariant?.(hoveredIndex !== null ? 'project' : 'default');
-  }, [hoveredIndex, setCursorVariant]);
+    if (!isMobile) {
+      setCursorVariant?.(hoveredIndex !== null ? 'project' : 'default');
+    }
+  }, [hoveredIndex, setCursorVariant, isMobile]);
 
-  const isMobile = windowWidth < 768;
-  const isTablet = windowWidth >= 768 && windowWidth < 1024;
-
-  // Performans: rAF throttle için ref
+  // Desktop hover logic
   const rafRef = useRef(null);
-  // Anlık hover değerini ref ile tut (closure sorununu önlemek için)
   const hoveredIndexRef = useRef(null);
-
-  // Rects cache
   const cardRectsRef = useRef([]);
 
   const updateCardRects = useCallback(() => {
@@ -209,6 +309,7 @@ const CardStack3D = ({ setCursorVariant }) => {
   }, []);
 
   useEffect(() => {
+    if (isMobile) return;
     updateCardRects();
     window.addEventListener('resize', updateCardRects);
     window.addEventListener('scroll', updateCardRects, { passive: true });
@@ -216,14 +317,11 @@ const CardStack3D = ({ setCursorVariant }) => {
       window.removeEventListener('resize', updateCardRects);
       window.removeEventListener('scroll', updateCardRects);
     };
-  }, [updateCardRects]);
+  }, [updateCardRects, isMobile]);
 
-  // Gerçek DOM elementlerinin bounding rect'ine göre hover hesapla (Cache kullanarak)
   const handleContainerMouseMove = useCallback((e) => {
-    // Rects boşsa güncelle (ilk giriş vs)
+    if (isMobile) return;
     if (cardRectsRef.current.length === 0) updateCardRects();
-
-    // rAF varsa atla (throttle)
     if (rafRef.current) return;
 
     const mouseClientX = e.clientX;
@@ -231,34 +329,23 @@ const CardStack3D = ({ setCursorVariant }) => {
 
     rafRef.current = requestAnimationFrame(() => {
       let foundIndex = null;
-
-      // Sağdan sola kontrol et (görsel olarak üstte olan kartlar önce)
       for (let i = PROJECT_DATA.length - 1; i >= 0; i--) {
         const rect = cardRectsRef.current[i];
         if (!rect) continue;
-
-        if (
-          mouseClientX >= rect.left &&
-          mouseClientX <= rect.right &&
-          mouseClientY >= rect.top &&
-          mouseClientY <= rect.bottom
-        ) {
+        if (mouseClientX >= rect.left && mouseClientX <= rect.right &&
+          mouseClientY >= rect.top && mouseClientY <= rect.bottom) {
           foundIndex = i;
-          break; // İlk bulunanı al ve çık
+          break;
         }
       }
-
-      // Sadece index değiştiyse state güncelle (Render optimization)
       if (hoveredIndexRef.current !== foundIndex) {
         setHoveredIndex(foundIndex);
         hoveredIndexRef.current = foundIndex;
       }
-
       rafRef.current = null;
     });
-  }, [updateCardRects]);
+  }, [updateCardRects, isMobile]);
 
-  // Cleanup cleanup
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -267,29 +354,32 @@ const CardStack3D = ({ setCursorVariant }) => {
 
   return (
     <>
-      <section style={{
-        position: 'absolute',
-        top: 'calc(200vh + 35vw)', // Responsive: vw-based offset
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '100%',
-        minHeight: '500px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: 'clamp(10px, 2vw, 20px)'
-      }}>
-        {/* Kocaman Arka Plan Başlık */}
+      <section
+        ref={sectionRef}
+        style={{
+          position: 'absolute',
+          top: isMobile ? 'calc(200vh + 25vw)' : 'calc(200vh + 35vw)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          minHeight: isMobile ? '450px' : '500px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: isMobile ? '16px' : 'clamp(10px, 2vw, 20px)'
+        }}
+      >
+        {/* Arka Plan Başlık */}
         <motion.h2
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.08 }}
+          animate={{ opacity: isMobile ? 0.05 : 0.08 }}
           transition={{ duration: 1 }}
           style={{
             position: 'absolute',
-            top: '10%',
+            top: isMobile ? '0%' : '10%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            fontSize: 'clamp(120px, 20vw, 280px)',
+            fontSize: isMobile ? 'clamp(50px, 16vw, 100px)' : 'clamp(120px, 20vw, 280px)',
             fontWeight: 900,
             letterSpacing: '0.02em',
             color: 'white',
@@ -300,49 +390,74 @@ const CardStack3D = ({ setCursorVariant }) => {
             userSelect: 'none',
           }}
         >
-          Çalışmalarım
+          {t('cards.title')}
         </motion.h2>
 
-        {/* Kart Destesi */}
-        <motion.div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            perspective: '2000px',
+        {/* MOBİL: 2x2 Grid */}
+        {isMobile ? (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '12px',
+            width: '100%',
+            maxWidth: '380px',
+            marginTop: 'clamp(60px, 12vw, 100px)',
+            padding: '0 8px',
             zIndex: 1,
-            marginTop: '150px',
-            willChange: 'transform',
-            transform: 'translateZ(0)',
-          }}
-        >
-          <motion.div
-            ref={containerRef}
-            onMouseMove={handleContainerMouseMove}
-            onMouseLeave={() => setHoveredIndex(null)}
-            style={{
-              display: 'flex',
-              transformStyle: 'preserve-3d',
-              rotateX,
-              rotateY,
-              transformOrigin: 'center center',
-            }}
-          >
+          }}>
             {PROJECT_DATA.map((card, index) => (
-              <CardItem
+              <MobileCard
                 key={card.id}
-                ref={el => cardRefs.current[index] = el}
                 card={card}
                 index={index}
-                isHovered={hoveredIndex === index}
-                isMobile={isMobile}
-                isTablet={isTablet}
-                totalCards={PROJECT_DATA.length}
                 onCardClick={setSelectedCardId}
+                t={t}
+                scrollProgress={scrollYProgress}
               />
             ))}
+          </div>
+        ) : (
+          /* DESKTOP/TABLET: 3D Kart Destesi */
+          <motion.div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              perspective: '2000px',
+              zIndex: 1,
+              marginTop: isTablet ? '120px' : '150px',
+              willChange: 'transform',
+              transform: 'translateZ(0)',
+            }}
+          >
+            <motion.div
+              ref={containerRef}
+              onMouseMove={handleContainerMouseMove}
+              onMouseLeave={() => setHoveredIndex(null)}
+              style={{
+                display: 'flex',
+                transformStyle: 'preserve-3d',
+                rotateX,
+                rotateY,
+                transformOrigin: 'center center',
+              }}
+            >
+              {PROJECT_DATA.map((card, index) => (
+                <CardItem
+                  key={card.id}
+                  ref={el => cardRefs.current[index] = el}
+                  card={card}
+                  index={index}
+                  isHovered={hoveredIndex === index}
+                  isTablet={isTablet}
+                  totalCards={PROJECT_DATA.length}
+                  onCardClick={setSelectedCardId}
+                  t={t}
+                />
+              ))}
+            </motion.div>
           </motion.div>
-        </motion.div>
+        )}
       </section>
 
       <AnimatePresence>

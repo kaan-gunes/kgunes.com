@@ -1,7 +1,7 @@
 {
     "tagline": {
-        "line1": "A Creative Partner",
-        "line2": "for companies and brands that decide to move forward."
+        "line1": "Tasarımcı",
+        "line2": "& Teknoloji Meraklısı"
     },
     "about": {
         "line1": "<b>8 yıldır</b> <i>dijital tasarım</i> alanında kendimi geliştiriyorum.",
@@ -13,20 +13,26 @@
         "long_description": "Ben <b>Kaan Güneş</b>. <b>İTÜ MTAL Bilişim Teknolojileri</b> öğrencisiyim. <b>8 yılı aşkın süredir</b> grafik tasarımla ilgileniyorum. Tasarımcı kimliğimin dışında, bir teknoloji meraklısı olarak <b>IoT</b> gibi alanlarda kendimi geliştiriyorum. Bu kapsamda 2025'te Hollanda'da gerçekleşmiş olan <b>Erasmus</b> programına katılım sağlamaya hak kazandım. Ayrıca <b>Generative AI</b> dünyasına ilk çıktığı günden beri büyük bir ilgi duyuyor ve bağımsız bir uzmanlık alanı olarak kendimi bu yönde geliştiriyorum."
     },
     "cards": {
-        "title": "PORTFOLIO",
-        "subtitle": "SEÇİLMİŞ İŞLER 2024-2025",
-        "comingSoon": "YAKINDA",
-        "bottomExplore": "KEŞFETMEK İÇİN KAYDIRIN",
-        "projectListCount": "{{count}} Proje",
-        "exploreProject": "Projeyi İncele",
-        "hoodie": "Hoodie Tasarımları",
-        "cd": "Albüm Kapakları",
-        "sf_logo": "SF Logo Çalışmaları",
-        "sf_st": "SF Kurumsal Kimlik"
+        "title": "Çalışmalarım",
+        "logos": "Logolar",
+        "clothing": "Giyim Tasarımları",
+        "posters": "Afişler",
+        "socialMedia": "Sosyal Medya"
+    },
+    "slider": {
+        "title1": "Hayalini",
+        "title2": "Gerçeğe Çevir",
+        "before": "ÖNCE",
+        "after": "SONRA"
     },
     "project": {
         "vectorDesign": "Vektörel Tasarım",
         "mannequinView": "Manken Görünümü",
+        "tapToFlip": "Çevirmek için tıkla",
         "defaultDescription": "{{category}} kategorisindeki {{project}} projesi."
+    },
+    "contact": {
+        "title": "İletişime Geç",
+        "aboutMe": "Hakkımda"
     }
 }

@@ -148,7 +148,7 @@ body {
   align-items: baseline;
   gap: clamp(15px, 2vw, 40px);
   font-family: "Halfre", sans-serif;
-  font-size: clamp(60px, 15vw, 320px);
+  font-size: clamp(80px, 22vw, 320px);
   font-weight: normal;
   letter-spacing: -0.02em;
   line-height: 1.5;
@@ -288,6 +288,7 @@ body {
 @media (max-width: 768px) {
   .hero {
     padding: 20px;
+    min-height: 460vh;
   }
 
   .name {
