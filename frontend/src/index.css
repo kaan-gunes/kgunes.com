@@ -84,6 +84,21 @@ body {
   overflow-x: hidden;
 }
 
+/* Body's scrollbar */
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+
 .hero {
   position: relative;
   width: 100%;

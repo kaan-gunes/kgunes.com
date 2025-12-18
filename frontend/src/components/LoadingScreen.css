@@ -92,7 +92,7 @@
     stroke-dasharray: 5000;
     stroke-dashoffset: 5000;
     animation: drawPath2 1.8s cubic-bezier(0.35, 0, 0.25, 1) forwards;
-    animation-delay: 1.1s;
+    animation-delay: 1.2s;
 }
 
 @keyframes drawPath2 {
@@ -114,7 +114,7 @@
     stroke-dasharray: 3000;
     stroke-dashoffset: 3000;
     animation: drawPath3 1.4s cubic-bezier(0.35, 0, 0.25, 1) forwards;
-    animation-delay: 2.3s;
+    animation-delay: 2.2s;
 }
 
 @keyframes drawPath3 {
@@ -136,7 +136,7 @@
     stroke-dasharray: 600;
     stroke-dashoffset: 600;
     animation: drawPath4 0.5s cubic-bezier(0.33, 0, 0.2, 1) forwards;
-    animation-delay: 3.6s;
+    animation-delay: 3.0s;
 }
 
 @keyframes drawPath4 {
@@ -158,7 +158,7 @@
     stroke-dasharray: 200;
     stroke-dashoffset: 200;
     animation: drawPath5 0.45s cubic-bezier(0.33, 0, 0.2, 1) forwards;
-    animation-delay: 4.0s;
+    animation-delay: 3.4s;
 }
 
 @keyframes drawPath5 {

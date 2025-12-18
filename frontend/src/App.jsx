@@ -193,7 +193,7 @@ function App() {
     const BASE_WIDTH = 1920;
 
     const applyResolutionScaling = () => {
-      /*       const viewportWidth = window.innerWidth;
+   /*          const viewportWidth = window.innerWidth;
       
             if (viewportWidth > BASE_WIDTH) {
               // 1920px'den büyük ekranlarda scale uygula

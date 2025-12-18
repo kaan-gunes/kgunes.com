@@ -29,6 +29,19 @@
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
 }
 
+.card-detail-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.card-detail-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.card-detail-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
 .card-detail-header {
     display: flex;
     justify-content: space-between;
