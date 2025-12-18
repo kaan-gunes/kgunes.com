@@ -193,30 +193,30 @@ function App() {
     const BASE_WIDTH = 1920;
 
     const applyResolutionScaling = () => {
-   /*          const viewportWidth = window.innerWidth;
-      
-            if (viewportWidth > BASE_WIDTH) {
-              // 1920px'den büyük ekranlarda scale uygula
-              const scale = viewportWidth / BASE_WIDTH;
-      
-              // Hero container'ı scale et
-              const heroElement = document.querySelector('.hero');
-              if (heroElement) {
-                heroElement.style.transform = `scale(${scale})`;
-                heroElement.style.transformOrigin = 'top left';
-                heroElement.style.width = `${BASE_WIDTH}px`;
-                // Scale sonrası yüksekliği düzelt
-                document.body.style.height = `${heroElement.scrollHeight * scale}px`;
-              }
-            } else {
-              // 1920px ve altında normal görüntüle
-              const heroElement = document.querySelector('.hero');
-              if (heroElement) {
-                heroElement.style.transform = 'none';
-                heroElement.style.width = '100%';
-                document.body.style.height = 'auto';
-              }
-            } */
+      /*          const viewportWidth = window.innerWidth;
+         
+               if (viewportWidth > BASE_WIDTH) {
+                 // 1920px'den büyük ekranlarda scale uygula
+                 const scale = viewportWidth / BASE_WIDTH;
+         
+                 // Hero container'ı scale et
+                 const heroElement = document.querySelector('.hero');
+                 if (heroElement) {
+                   heroElement.style.transform = `scale(${scale})`;
+                   heroElement.style.transformOrigin = 'top left';
+                   heroElement.style.width = `${BASE_WIDTH}px`;
+                   // Scale sonrası yüksekliği düzelt
+                   document.body.style.height = `${heroElement.scrollHeight * scale}px`;
+                 }
+               } else {
+                 // 1920px ve altında normal görüntüle
+                 const heroElement = document.querySelector('.hero');
+                 if (heroElement) {
+                   heroElement.style.transform = 'none';
+                   heroElement.style.width = '100%';
+                   document.body.style.height = 'auto';
+                 }
+               } */
     };
 
     // İlk yüklemede ve resize'da uygula

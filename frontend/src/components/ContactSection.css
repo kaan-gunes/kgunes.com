@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: center;
     padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
-    margin-top: clamp(100px, 15vw, 200px);
+    margin-top: clamp(200px, 25vw, 400px);
 }
 
 .contact-glass {
