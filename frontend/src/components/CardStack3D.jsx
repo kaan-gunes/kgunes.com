@@ -358,7 +358,7 @@ const CardStack3D = ({ setCursorVariant }) => {
         ref={sectionRef}
         style={{
           position: 'absolute',
-          top: isMobile ? 'calc(200vh + 25vw)' : 'calc(200vh + 35vw)',
+          top: isMobile ? 'calc(2160px + 25vw)' : 'calc(2160px + 35vw)',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '100%',

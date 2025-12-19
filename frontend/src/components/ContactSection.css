@@ -1,7 +1,7 @@
 .contact-section {
     position: relative;
     width: 100%;
-    min-height: 60vh;
+    min-height: 648px;
     display: flex;
     flex-direction: column;
     align-items: center;
