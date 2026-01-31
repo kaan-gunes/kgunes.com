@@ -28,10 +28,16 @@
     "project": {
         "vectorDesign": "Vector Design",
         "mannequinView": "Mannequin View",
+        "beforeDesign": "Before",
+        "afterDesign": "After",
         "tapToFlip": "Tap to flip"
     },
     "contact": {
         "title": "Keep in Touch",
         "aboutMe": "About Me"
-    }
+    },
+    "cursor": {
+        "inspect": "INSPECT"
+    },
+    "pageTitle": "Kaan Güneş | Portfolio"
 }

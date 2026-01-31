@@ -1,0 +1,62 @@
+/* Cursor Dot - Tek parça, anlık takip eden imleç */
+.cursor-dot {
+    position: fixed;
+    width: 14px;
+    height: 14px;
+    background-color: white;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999999;
+    /* LoadingScreen'in üstünde görünmesi için yükseltildi */
+    /* mix-blend-mode: difference; En iyi görünürlük için */
+    mix-blend-mode: exclusion;
+
+    /* Merkezleme düzeltmesi: translate(-50%, -50%) */
+    transform: translate(-50%, -50%);
+
+    will-change: transform, width, height;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* transition kaldırıldı - JS ile yönetiliyor */
+}
+
+/* PROJECT HOVER - LIQUID GLASS EFFECT */
+.cursor-dot.project-hover {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    mix-blend-mode: normal;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.cursor-text {
+    font-family: 'Axiforma', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: white;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards 0.1s;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Global kursor gizleme - sadece masaüstü */
+@media (pointer: fine) {
+    * {
+        cursor: none !important;
+    }
+
+    /* İframe veya özel durumlar için */
+    iframe {
+        cursor: auto !important;
+    }
+}

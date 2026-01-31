@@ -28,11 +28,17 @@
     "project": {
         "vectorDesign": "Vektörel Tasarım",
         "mannequinView": "Manken Görünümü",
+        "beforeDesign": "Öncesi",
+        "afterDesign": "Sonrası",
         "tapToFlip": "Çevirmek için tıkla",
         "defaultDescription": "{{category}} kategorisindeki {{project}} projesi."
     },
     "contact": {
         "title": "İletişime Geç",
         "aboutMe": "Hakkımda"
-    }
+    },
+    "cursor": {
+        "inspect": "İNCELE"
+    },
+    "pageTitle": "Kaan Güneş | Portfolyo"
 }

@@ -1,14 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap");
 
 @font-face {
-  font-family: "Aequitas";
-  src: url("/AequitasBold.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-  font-display: block;
-}
-
-@font-face {
   font-family: "Halfre";
   src: url("/halfre.ttf") format("truetype");
   font-weight: normal;
@@ -70,6 +62,19 @@
   box-sizing: border-box;
 }
 
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 html {
   overflow-x: hidden;
 }
@@ -102,7 +107,7 @@ body::-webkit-scrollbar-thumb {
 .hero {
   position: relative;
   width: 100%;
-  min-height: 6480px;
+  min-height: 560vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -116,7 +121,8 @@ body::-webkit-scrollbar-thumb {
   top: 0;
   left: 0;
   width: 100%;
-  height: 1080px;
+  height: 100vh;
+  height: 100dvh;
   background-image: url("/hero.webp");
   background-size: cover;
   background-position: center;
@@ -152,7 +158,8 @@ body::-webkit-scrollbar-thumb {
   --mask-pos: -100%;
   position: absolute;
   /* vw-based positioning for consistent look across aspect ratios */
-  top: calc(1080px - clamp(400px, 35vw, 680px));
+  top: calc(100vh - clamp(400px, 35vw, 680px));
+  top: calc(100dvh - clamp(400px, 35vw, 680px));
   left: 0;
   right: 0;
   width: 100%;
@@ -188,10 +195,11 @@ body::-webkit-scrollbar-thumb {
 /* About Section - Responsive */
 .about-section {
   position: absolute;
-  top: calc(1080px + clamp(50px, 5vw, 100px));
+  top: calc(100vh + clamp(50px, 5vw, 100px));
+  top: calc(100dvh + clamp(50px, 5vw, 100px));
   left: 0;
   width: 100%;
-  min-height: 1080px;
+  min-height: 100vh;
   padding: clamp(30px, 4vw, 60px);
 }
 
@@ -247,7 +255,7 @@ body::-webkit-scrollbar-thumb {
   color: #fff;
   line-height: 1.2;
   white-space: nowrap;
-  will-change: transform, opacity, filter;
+  contain: layout style;
 }
 
 .about-line b,
@@ -297,20 +305,56 @@ body::-webkit-scrollbar-thumb {
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .hero {
-    padding: 20px;
-    min-height: 4968px;
+    min-height: auto;
+    /* Mobilde aşırı uzun scroll engelleme */
+    padding-bottom: 100px;
+    height: auto;
+    overflow-x: hidden;
+  }
+
+  /* Tagline & Name Adjustment */
+  .tagline {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    margin-top: 20vh;
   }
 
   .name {
+    position: relative;
+    top: auto;
+    margin-top: 40px;
     flex-direction: column;
     gap: 0;
     align-items: center;
+    font-size: clamp(60px, 15vw, 120px);
+    padding-bottom: 20px;
   }
 
+  /* About Section Adjustment */
   .about-section {
-    padding: 20px;
+    position: relative;
+    top: auto;
+    min-height: auto;
+    padding: 40px 20px;
+    margin-top: 60px;
+  }
+
+  .about-text-wrapper {
+    position: relative;
+    top: auto;
+    padding: 0;
+  }
+
+  .about-top-lines {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .about-line {
+    font-size: clamp(24px, 6vw, 40px);
+    white-space: normal;
+    /* Mobilde satır sığmazsa taşsın */
   }
 
   .about-bottom-lines {
@@ -318,6 +362,35 @@ body::-webkit-scrollbar-thumb {
     width: 100%;
     padding-left: 0;
   }
+
+  .about-long-description {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 30px;
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .selfie-container {
+    display: none;
+    /* Mobilde selfie gizli kalsın ya da küçültülebilir */
+  }
+
+  /* Arka plan maske ayarı mobil için */
+  .hero-bg {
+    height: 100vh;
+    background-attachment: scroll;
+    /* iOS fix */
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Önceden tanımlı küçük ayarların üstüne yazar */
+  .about-section {
+    padding: 20px;
+  }
+
 
   .about-long-description {
     margin-left: 0;

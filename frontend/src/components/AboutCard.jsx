@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './AboutCard.css';
 
-const AboutCard = () => {
+const AboutCard = memo(() => {
   const { t } = useTranslation();
 
   return (
@@ -14,6 +14,6 @@ const AboutCard = () => {
       </div>
     </div>
   );
-};
+});
 
 export default AboutCard;

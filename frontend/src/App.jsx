@@ -1,21 +1,28 @@
-import { useEffect, useRef, useState } from "react";
-import { useTranslation, Trans } from "react-i18next";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { throttle, prefersReducedMotion, isLowEndDevice } from "./utils/performance";
 import AboutCard from "./components/AboutCard";
-import CardStack3D from "./components/CardStack3D";
-import BeforeAfterSlider from "./components/BeforeAfterSlider";
-import InteractiveGrid from "./components/InteractiveGrid";
 import LoadingScreen from "./components/LoadingScreen";
 import LanguageToggle from "./components/LanguageToggle";
-import ContactSection from "./components/ContactSection";
+import CustomCursor from "./components/CustomCursor";
 import "./index.css";
+
+// Lazy load heavy components
+const CardStack3D = lazy(() => import("./components/CardStack3D"));
+const BeforeAfterSlider = lazy(() => import("./components/BeforeAfterSlider"));
+const ContactSection = lazy(() => import("./components/ContactSection"));
+const InteractiveGrid = lazy(() => import("./components/InteractiveGrid"));
+
+// Fallback component for lazy loading
+const LazyFallback = () => null;
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const heroImageRef = useRef(null);
   const selfieRef = useRef(null);
@@ -23,6 +30,20 @@ function App() {
   const taglineRef = useRef(null);
   const nameRef = useRef(null);
   const appRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1200 : false);
+  const [isLowEnd, setIsLowEnd] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  // Check device capabilities on mount
+  useEffect(() => {
+    setIsLowEnd(isLowEndDevice());
+    setReducedMotion(prefersReducedMotion());
+  }, []);
+
+  // Dinamik Başlık Güncellemesi
+  useEffect(() => {
+    document.title = t('pageTitle', 'Kaan Güneş | Portfolio');
+  }, [i18n.language, t]);
 
   useEffect(() => {
     // Sayfa yüklendiğinde en başa scroll
@@ -38,6 +59,8 @@ function App() {
       orientation: "vertical",
       smoothWheel: true,
     });
+
+    window.lenis = lenis;
 
     // Lenis'i GSAP ScrollTrigger ile senkronize et
     lenis.on("scroll", ScrollTrigger.update);
@@ -194,99 +217,126 @@ function App() {
 
     const applyResolutionScaling = () => {
       const viewportWidth = window.innerWidth;
-      const scale = viewportWidth / BASE_WIDTH;
-
       const heroElement = document.querySelector('.hero');
       const wrapperElement = document.querySelector('.main-wrapper');
+
+      // Update mobile state
+      setIsMobile(viewportWidth < 1200);
+
+      // Mobilde ve tablette scaling kapat (Native responsive)
+      if (viewportWidth < 1200) {
+        if (heroElement && wrapperElement) {
+          heroElement.style.width = '100%';
+          heroElement.style.transform = 'none';
+          wrapperElement.style.height = 'auto'; // Reset height
+        }
+        return;
+      }
+
+      const scale = viewportWidth / BASE_WIDTH;
 
       if (heroElement && wrapperElement) {
         heroElement.style.width = `${BASE_WIDTH}px`;
         heroElement.style.transform = `scale(${scale})`;
         heroElement.style.transformOrigin = 'top left';
-        
+
         // Scale sonrası yüksekliği düzelt
         wrapperElement.style.height = `${heroElement.scrollHeight * scale}px`;
       }
     };
 
+    // Throttled resize handler for performance
+    const throttledResize = throttle(applyResolutionScaling, 100);
+
     // İlk yüklemede ve resize'da uygula
     applyResolutionScaling();
-    window.addEventListener('resize', applyResolutionScaling);
+    window.addEventListener('resize', throttledResize);
 
     return () => {
       lenis.destroy();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      window.removeEventListener('resize', applyResolutionScaling);
+      window.removeEventListener('resize', throttledResize);
     };
   }, []);
 
   return (
     <>
+      {/* Custom cursor only on desktop with pointer device - eager loaded for loading screen */}
+      {!isMobile && <CustomCursor />}
       <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
 
       <LanguageToggle />
 
-      <InteractiveGrid isVisible={!isLoading} />
+      {/* Interactive Grid */}
+      <Suspense fallback={<LazyFallback />}>
+        <InteractiveGrid isVisible={!isLoading} />
+      </Suspense>
 
       <div className="main-wrapper" style={{ width: '100%', overflow: 'hidden' }}>
-      <div
-        ref={appRef}
-        className="hero"
-        style={{
-          opacity: isLoading ? 0 : 1,
-          transition: 'opacity 0.5s ease-out'
-        }}
-      >
-        {/* Background Image */}
-        <div ref={heroImageRef} className="hero-bg"></div>
+        <div
+          ref={appRef}
+          className="hero"
+          style={{
+            opacity: isLoading ? 0 : 1,
+            transition: 'opacity 0.5s ease-out'
+          }}
+        >
+          {/* Background Image */}
+          <div ref={heroImageRef} className="hero-bg"></div>
 
-        {/* Top Text */}
-        <p ref={taglineRef} className="tagline">
-          <em>{t("tagline.line1")}</em> {t("tagline.line2")}
-        </p>
+          {/* Top Text */}
+          <p ref={taglineRef} className="tagline">
+            <em>{t("tagline.line1")}</em> {t("tagline.line2")}
+          </p>
 
-        {/* Main Name */}
-        <h1 ref={nameRef} className="name">
-          <span className="first">Kaan</span>
-          <span className="last">Güneş</span>
-        </h1>
+          {/* Main Name */}
+          <h1 ref={nameRef} className="name">
+            <span className="first">Kaan</span>
+            <span className="last">Güneş</span>
+          </h1>
 
-        {/* About Section */}
-        <section className="about-section">
-          <div ref={selfieRef} className="selfie-container">
-            <img src="/selfie.webp" alt="Kaan Güneş" className="selfie" />
-          </div>
-
-          <div ref={aboutTextRef} className="about-text-wrapper">
-            {/* Üst satırlar */}
-            <div className="about-top-lines">
-              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line1") }} />
-              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2") }} />
-              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2_sub") }} />
+          {/* About Section */}
+          <section className="about-section">
+            <div ref={selfieRef} className="selfie-container">
+              <img src="/selfie.webp" alt="Kaan Güneş" className="selfie" />
             </div>
 
-            {/* Alt satırlar */}
-            <div className="about-bottom-lines">
-              <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line3") }} />
-              <span className="about-line about-line-indent" dangerouslySetInnerHTML={{ __html: t("about.line4") }} />
-              <span className="about-line about-line-indent-2" dangerouslySetInnerHTML={{ __html: t("about.line5") }} />
+            <div ref={aboutTextRef} className="about-text-wrapper">
+              {/* Üst satırlar */}
+              <div className="about-top-lines">
+                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line1") }} />
+                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2") }} />
+                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2_sub") }} />
+              </div>
+
+              {/* Alt satırlar */}
+              <div className="about-bottom-lines">
+                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line3") }} />
+                <span className="about-line about-line-indent" dangerouslySetInnerHTML={{ __html: t("about.line4") }} />
+                <span className="about-line about-line-indent-2" dangerouslySetInnerHTML={{ __html: t("about.line5") }} />
+              </div>
+
+              {/* Uzun Açıklama Metni */}
+              <AboutCard />
             </div>
+          </section>
 
-            {/* Uzun Açıklama Metni */}
-            <AboutCard />
-          </div>
-        </section>
+          {/* Portfolio Section - ABOUT'UN ALTINDA */}
+          <Suspense fallback={<LazyFallback />}>
+            <CardStack3D reducedMotion={reducedMotion} />
+          </Suspense>
 
-        {/* Portfolio Section - ABOUT'UN ALTINDA */}
-        <CardStack3D />
+          {/* Before/After Slider Section */}
+          <Suspense fallback={<LazyFallback />}>
+            <BeforeAfterSlider />
+          </Suspense>
 
-        {/* Before/After Slider Section */}
-        <BeforeAfterSlider />
+          {/* Contact Section */}
+          <Suspense fallback={<LazyFallback />}>
+            <ContactSection />
+          </Suspense>
 
-        {/* Contact Section */}
-        <ContactSection />
-
-      </div>
+        </div>
       </div>
     </>
   );

@@ -162,9 +162,11 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     .before-after-section {
-        top: 3456px;
+        position: relative;
+        top: auto;
+        margin-top: 60px;
     }
 
     .before-after-container {

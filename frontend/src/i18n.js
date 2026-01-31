@@ -11,7 +11,7 @@ i18n
             tr: { translation: tr },
             en: { translation: en }
         },
-        lng: 'tr', // Varsayılan dil
+        lng: 'en', // Varsayılan dil - İngilizce
         fallbackLng: 'tr',
         interpolation: {
             escapeValue: false

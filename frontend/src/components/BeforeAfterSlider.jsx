@@ -1,8 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './BeforeAfterSlider.css';
 
-const BeforeAfterSlider = () => {
+const BeforeAfterSlider = memo(() => {
     const { t } = useTranslation();
     const containerRef = useRef(null);
     const afterImageRef = useRef(null);
@@ -127,18 +127,22 @@ const BeforeAfterSlider = () => {
                 >
                     {/* Before Image (Alt) */}
                     <img
-                        src="/slider/kasım_sf_pre.webp"
+                        src="/slider/kasim_sf_pre.webp"
                         alt="Before"
                         className="slider-image before-image"
+                        loading="lazy"
+                        decoding="async"
                         draggable="false"
                     />
 
                     {/* After Image (Üst - Clip ile kesilmiş) */}
                     <img
                         ref={afterImageRef}
-                        src="/slider/kasım_sf.webp"
+                        src="/slider/kasim_sf.webp"
                         alt="After"
                         className="slider-image after-image"
+                        loading="lazy"
+                        decoding="async"
                         style={{ clipPath: 'inset(0 50% 0 0)' }}
                         draggable="false"
                     />
@@ -163,6 +167,6 @@ const BeforeAfterSlider = () => {
             </div>
         </section>
     );
-};
+});
 
 export default BeforeAfterSlider;

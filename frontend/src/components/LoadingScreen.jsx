@@ -1,33 +1,37 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, memo } from 'react';
 import './LoadingScreen.css';
 
+// Only preload critical above-the-fold assets
 const ASSETS_TO_PRELOAD = [
     '/hero.webp',
     '/selfie.webp',
-    '/slider/kasım_sf.webp',
-    '/slider/kasım_sf_pre.webp',
-    '/slider/ps_logo.webp',
-    '/images/CARDS/sf_logo_card.webp',
-    '/images/CARDS/hoodie_card.webp',
-    '/images/CARDS/cd_card.webp',
-    '/images/CARDS/sf_st_card.webp'
 ];
 
-const LoadingScreen = ({ onLoadingComplete }) => {
+// Secondary assets (load after main content)
+const SECONDARY_ASSETS = [
+    '/slider/kasim_sf.webp',
+    '/slider/kasim_sf_pre.webp',
+    '/images/CARDS/sf_card.webp',
+];
+
+const LoadingScreen = memo(({ onLoadingComplete }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [animationComplete, setAnimationComplete] = useState(false);
     const [assetsReady, setAssetsReady] = useState(false);
     const svgRef = useRef(null);
 
-    // Asset preloading
+    // Asset preloading - only critical assets
     useEffect(() => {
         let loadedCount = 0;
         const totalAssets = ASSETS_TO_PRELOAD.length;
+        let isMounted = true;
 
         const updateProgress = () => {
             loadedCount++;
-            if (loadedCount === totalAssets) {
+            if (loadedCount >= totalAssets && isMounted) {
                 setAssetsReady(true);
+                // Load secondary assets after main content is ready
+                loadSecondaryAssets();
             }
         };
 
@@ -36,33 +40,42 @@ const LoadingScreen = ({ onLoadingComplete }) => {
                 const img = new Image();
                 img.src = src;
                 await img.decode();
-                updateProgress();
+                if (isMounted) updateProgress();
             } catch (e) {
-                console.warn(`Failed to decode image: ${src}`, e);
-                updateProgress();
+                if (isMounted) updateProgress();
             }
+        };
+
+        const loadSecondaryAssets = () => {
+            // Load secondary assets in background (non-blocking)
+            SECONDARY_ASSETS.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
         };
 
         ASSETS_TO_PRELOAD.forEach(src => {
             loadAndDecode(src);
         });
 
-        // Fallback: 15 saniyeye çıkar
+        // Reduced fallback timeout
         const timeout = setTimeout(() => {
-            if (loadedCount < totalAssets) {
-                console.warn("Loading timed out, forcing start.");
+            if (loadedCount < totalAssets && isMounted) {
                 setAssetsReady(true);
             }
-        }, 15000);
+        }, 8000);
 
-        return () => clearTimeout(timeout);
+        return () => {
+            isMounted = false;
+            clearTimeout(timeout);
+        };
     }, []);
 
-    // Animation timing - 4.5 saniye (0.5s gecikme ekli)
+    // Animation timing - ~2.85 saniye (minimal bekleme)
     useEffect(() => {
         const animationTimer = setTimeout(() => {
             setAnimationComplete(true);
-        }, 4500);
+        }, 2850);
 
         return () => clearTimeout(animationTimer);
     }, []);
@@ -115,6 +128,6 @@ const LoadingScreen = ({ onLoadingComplete }) => {
             </div>
         </div>
     );
-};
+});
 
 export default LoadingScreen;

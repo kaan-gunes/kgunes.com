@@ -70,7 +70,7 @@
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
     animation: drawPath1 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 0.5s;
+    animation-delay: 0s;
 }
 
 @keyframes drawPath1 {
@@ -92,7 +92,7 @@
     stroke-dasharray: 5000;
     stroke-dashoffset: 5000;
     animation: drawPath2 1.8s cubic-bezier(0.35, 0, 0.25, 1) forwards;
-    animation-delay: 1.2s;
+    animation-delay: 0.2s;
 }
 
 @keyframes drawPath2 {
@@ -114,7 +114,7 @@
     stroke-dasharray: 3000;
     stroke-dashoffset: 3000;
     animation: drawPath3 1.4s cubic-bezier(0.35, 0, 0.25, 1) forwards;
-    animation-delay: 2.2s;
+    animation-delay: 1.2s;
 }
 
 @keyframes drawPath3 {
@@ -136,7 +136,7 @@
     stroke-dasharray: 600;
     stroke-dashoffset: 600;
     animation: drawPath4 0.5s cubic-bezier(0.33, 0, 0.2, 1) forwards;
-    animation-delay: 3.0s;
+    animation-delay: 2.0s;
 }
 
 @keyframes drawPath4 {
@@ -158,7 +158,7 @@
     stroke-dasharray: 200;
     stroke-dashoffset: 200;
     animation: drawPath5 0.45s cubic-bezier(0.33, 0, 0.2, 1) forwards;
-    animation-delay: 3.4s;
+    animation-delay: 2.4s;
 }
 
 @keyframes drawPath5 {
@@ -178,7 +178,7 @@
 /* Elegant breathing glow - subtle and refined */
 .signature-svg {
     animation: breathingGlow 4s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-    animation-delay: 5.2s;
+    animation-delay: 4s;
 }
 
 @keyframes breathingGlow {

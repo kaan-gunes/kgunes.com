@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './ContactSection.css';
 
-function ContactSection() {
+const ContactSection = memo(function ContactSection() {
     const { t } = useTranslation();
 
     const socialLinks = [
@@ -80,7 +81,7 @@ function ContactSection() {
 
                 <div className="contact-divider" />
 
-                <a href="/cv.pdf" target="_blank" rel="noopener noreferrer" className="about-link">
+                <a href="https://docs.google.com/document/d/12yH4NLliMYY6c7fldR6Io2zSaRDnJwSGqME_h56_mLQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="about-link">
                     {t('contact.aboutMe')}
                 </a>
             </div>
@@ -88,6 +89,6 @@ function ContactSection() {
             <p className="copyright">© 2025 Kaan Güneş</p>
         </section>
     );
-}
+});
 
 export default ContactSection;

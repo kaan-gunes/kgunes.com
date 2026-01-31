@@ -1,42 +1,55 @@
-import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, memo, useRef, useCallback, lazy, Suspense } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence, useScroll } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import CardDetailView from './CardDetailView';
+import './CardStack3D.css';
+
+// Lazy load CardDetailView (heavy modal component)
+const CardDetailView = lazy(() => import('./CardDetailView'));
 
 const PROJECT_DATA = [
-  { id: 1, titleKey: "cards.logos", image: "/images/logo/kovak.webp" },
-  { id: 2, titleKey: "cards.clothing", image: "/images/CARDS/hoodie_card.webp" },
   { id: 3, titleKey: "cards.posters", image: "/images/CARDS/cd_card.webp" },
   { id: 4, titleKey: "cards.socialMedia", image: "/images/CARDS/sf_st_card.webp" },
+  { id: 2, titleKey: "cards.clothing", image: "/images/CARDS/hoodie_card.webp" },
+  { id: 1, titleKey: "cards.logos", image: "/images/CARDS/sf_card.webp" },
 ];
 
-// Ultra smooth spring konfigürasyonu
+// Optimized spring configuration
 const smoothSpring = {
   type: "spring",
-  stiffness: 180,
-  damping: 22,
-  mass: 0.8,
+  stiffness: 150,
+  damping: 20,
+  mass: 0.6,
+};
+
+// Reduced motion spring (faster, less animation)
+const reducedSpring = {
+  type: "spring",
+  stiffness: 300,
+  damping: 30,
+  mass: 0.3,
 };
 
 // ============================================
 // MOBİL KART - 2x2 Grid için basit, parallax destekli
 // ============================================
-const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress }) => {
+const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress, reducedMotion }) => {
   const title = t(card.titleKey);
   const isTopRow = index < 2;
 
-  // Üst satır kartları scroll ile yamulur
+  // Üst satır kartları scroll ile yamulur (disabled in reduced motion)
   const rotateX = useTransform(
     scrollProgress,
     [0, 0.3, 0.6],
-    isTopRow ? [0, -6, -12] : [0, 0, 0]
+    reducedMotion ? [0, 0, 0] : (isTopRow ? [0, -6, -12] : [0, 0, 0])
   );
 
   const y = useTransform(
     scrollProgress,
     [0, 0.6],
-    isTopRow ? [0, -15] : [0, 0]
+    reducedMotion ? [0, 0] : (isTopRow ? [0, -15] : [0, 0])
   );
+
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <motion.div
@@ -44,6 +57,7 @@ const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress }) => {
       tabIndex={0}
       aria-label={`${title} detaylarını aç`}
       onClick={() => onCardClick?.(card.id)}
+      data-cursor="project"
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -88,11 +102,15 @@ const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress }) => {
         </h3>
       </div>
 
+      {!imageLoaded && <div className="card-loading-spinner" />}
       <img
         src={card.image}
         alt={title}
-        loading="eager"
+        className={`card-image ${imageLoaded ? 'loaded' : ''}`}
+        loading="lazy"
+        decoding="async"
         draggable="false"
+        onLoad={() => setImageLoaded(true)}
         style={{
           width: '100%',
           height: '100%',
@@ -107,9 +125,11 @@ const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress }) => {
 // ============================================
 // DESKTOP KART - 3D efektli
 // ============================================
-const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, totalCards, onCardClick, t }, ref) => {
+const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, totalCards, onCardClick, t, reducedMotion }, ref) => {
   const zIndex = isHovered ? 100 : index;
   const title = t(card.titleKey);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const springConfig = reducedMotion ? reducedSpring : smoothSpring;
 
   const activate = () => onCardClick?.(card.id);
 
@@ -146,6 +166,7 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, tota
         outline: 'none',
         touchAction: 'manipulation',
       }}
+      data-cursor="project"
     >
       <motion.div
         style={{
@@ -159,12 +180,12 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, tota
           pointerEvents: 'none',
         }}
         animate={{
-          y: isHovered ? -50 : 0,
-          rotateY: isHovered ? 0 : -15,
-          rotateX: isHovered ? 0 : 4,
-          scale: isHovered ? 1.05 : 1,
+          y: isHovered ? (reducedMotion ? -20 : -50) : 0,
+          rotateY: reducedMotion ? 0 : (isHovered ? 0 : -15),
+          rotateX: reducedMotion ? 0 : (isHovered ? 0 : 4),
+          scale: isHovered ? 1.03 : 1,
         }}
-        transition={smoothSpring}
+        transition={springConfig}
       >
         {/* Title */}
         <motion.h3
@@ -228,19 +249,25 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, tota
           }}
           transition={smoothSpring}
         >
-          <img
-            src={card.image}
-            alt={card.title}
-            loading="eager"
-            draggable="false"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              pointerEvents: 'none',
-              userSelect: 'none',
-            }}
-          />
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            {!imageLoaded && <div className="card-loading-spinner" />}
+            <img
+              src={card.image}
+              alt={card.title}
+              className={`card-image ${imageLoaded ? 'loaded' : ''}`}
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+              onLoad={() => setImageLoaded(true)}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            />
+          </div>
         </motion.div>
       </motion.div>
     </div>
@@ -250,7 +277,7 @@ const CardItem = memo(React.forwardRef(({ card, index, isHovered, isTablet, tota
 // ============================================
 // ANA BİLEŞEN
 // ============================================
-const CardStack3D = ({ setCursorVariant }) => {
+const CardStack3D = ({ setCursorVariant, reducedMotion = false }) => {
   const { t } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -259,8 +286,8 @@ const CardStack3D = ({ setCursorVariant }) => {
   const sectionRef = useRef(null);
   const cardRefs = useRef([]);
 
-  const isMobile = windowWidth < 768;
-  const isTablet = windowWidth >= 768 && windowWidth < 1024;
+  const isMobile = windowWidth < 1200;
+  const isTablet = windowWidth >= 1200 && windowWidth < 1440; // Desktop tablet mode if needed
 
   // Mobil scroll parallax
   const { scrollYProgress } = useScroll({
@@ -268,12 +295,16 @@ const CardStack3D = ({ setCursorVariant }) => {
     offset: ["start end", "end start"]
   });
 
-  // Desktop mouse tracking
+  // Desktop mouse tracking (optimized)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springConfig = { damping: 40, stiffness: 100, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-12, 12]), springConfig);
+  const springConfig = reducedMotion 
+    ? { damping: 60, stiffness: 200, mass: 0.3 }
+    : { damping: 40, stiffness: 100, mass: 0.5 };
+  const rotateXRange = reducedMotion ? [2, -2] : [8, -8];
+  const rotateYRange = reducedMotion ? [-4, 4] : [-12, 12];
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], rotateXRange), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], rotateYRange), springConfig);
 
   // Mobilde mouse tracking bypass
   useEffect(() => {
@@ -357,16 +388,17 @@ const CardStack3D = ({ setCursorVariant }) => {
       <section
         ref={sectionRef}
         style={{
-          position: 'absolute',
-          top: isMobile ? 'calc(2160px + 25vw)' : 'calc(2160px + 35vw)',
+          position: isMobile ? 'relative' : 'absolute',
+          top: isMobile ? 'auto' : 'calc(2160px + 35vw)',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '100%',
-          minHeight: isMobile ? '450px' : '500px',
+          minHeight: isMobile ? 'auto' : '500px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          padding: isMobile ? '16px' : 'clamp(10px, 2vw, 20px)'
+          padding: isMobile ? '40px 16px' : 'clamp(10px, 2vw, 20px)',
+          marginTop: isMobile ? '60px' : '0'
         }}
       >
         {/* Arka Plan Başlık */}
@@ -413,6 +445,7 @@ const CardStack3D = ({ setCursorVariant }) => {
                 onCardClick={setSelectedCardId}
                 t={t}
                 scrollProgress={scrollYProgress}
+                reducedMotion={reducedMotion}
               />
             ))}
           </div>
@@ -453,6 +486,7 @@ const CardStack3D = ({ setCursorVariant }) => {
                   totalCards={PROJECT_DATA.length}
                   onCardClick={setSelectedCardId}
                   t={t}
+                  reducedMotion={reducedMotion}
                 />
               ))}
             </motion.div>
@@ -462,10 +496,12 @@ const CardStack3D = ({ setCursorVariant }) => {
 
       <AnimatePresence>
         {selectedCardId && (
-          <CardDetailView
-            cardId={selectedCardId}
-            onClose={() => setSelectedCardId(null)}
-          />
+          <Suspense fallback={null}>
+            <CardDetailView
+              cardId={selectedCardId}
+              onClose={() => setSelectedCardId(null)}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
     </>

@@ -1,5 +1,6 @@
 .contact-section {
-    position: relative;
+    position: absolute;
+    top: 4850px;
     width: 100%;
     min-height: 648px;
     display: flex;
@@ -7,7 +8,7 @@
     align-items: center;
     justify-content: center;
     padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
-    margin-top: clamp(200px, 25vw, 400px);
+    /* margin-top removed for absolute positioning on desktop */
 }
 
 .contact-glass {
@@ -192,9 +193,11 @@
     letter-spacing: 0.02em;
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
+/* Mobile updated */
+@media (max-width: 1200px) {
     .contact-section {
+        position: relative;
+        top: auto;
         padding: 40px 20px;
         min-height: auto;
         margin-top: 40px;
