@@ -7,13 +7,6 @@ const ASSETS_TO_PRELOAD = [
     '/selfie.webp',
 ];
 
-// Secondary assets (load after main content)
-const SECONDARY_ASSETS = [
-    '/slider/kasim_sf.webp',
-    '/slider/kasim_sf_pre.webp',
-    '/images/CARDS/sf_card.webp',
-];
-
 const LoadingScreen = memo(({ onLoadingComplete }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [animationComplete, setAnimationComplete] = useState(false);
@@ -30,8 +23,6 @@ const LoadingScreen = memo(({ onLoadingComplete }) => {
             loadedCount++;
             if (loadedCount >= totalAssets && isMounted) {
                 setAssetsReady(true);
-                // Load secondary assets after main content is ready
-                loadSecondaryAssets();
             }
         };
 
@@ -44,14 +35,6 @@ const LoadingScreen = memo(({ onLoadingComplete }) => {
             } catch (e) {
                 if (isMounted) updateProgress();
             }
-        };
-
-        const loadSecondaryAssets = () => {
-            // Load secondary assets in background (non-blocking)
-            SECONDARY_ASSETS.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
         };
 
         ASSETS_TO_PRELOAD.forEach(src => {
