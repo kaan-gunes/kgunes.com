@@ -35,8 +35,9 @@ const CARD_FOLDERS = {
 // Görseller - her klasör için hardcoded (performans için)
 const GALLERY_IMAGES = {
     logo: [
-        'astra.webp', 'bosphorus.webp', 'gorgez.webp', 'infinitech.webp',
-        'itu sf.webp', 'eftos.webp', 'ituspor.webp', 'kage logo.webp', 'kovak.webp', 'notmatix.webp'
+        'ares.webp', 'BirunAI.webp', 'gorgez.webp', 'infinitech.webp',
+        'itu sf.webp', 'eftos.webp', 'ituspor.webp', 'kovak.webp', 'notmatix.webp',
+        'SAFAK UAV.webp', 'stylemax.webp'
     ],
     clothing: [
         // Manken görselleri + vektörel karşılıkları
