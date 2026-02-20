@@ -2,13 +2,11 @@
   width: clamp(280px, 32%, 500px);
   margin-left: clamp(40%, 55%, 60%);
   margin-top: clamp(60px, 8vw, 120px);
-  height: clamp(300px, 25vw, 450px);
 }
 
 .about-card-inner {
   position: relative;
   width: 100%;
-  height: 100%;
   border-radius: clamp(12px, 1.5vw, 20px);
   overflow: hidden;
 }
@@ -31,12 +29,9 @@
 
 .about-card-content {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: clamp(16px, 2vw, 30px);
-  overflow-y: auto;
   text-align: left;
 }
 
@@ -47,7 +42,7 @@
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.95);
   text-wrap: pretty;
-  margin: auto;
+  margin: 0;
 }
 
 .about-card-content b,
@@ -76,7 +71,5 @@
     width: 90%;
     margin-left: 5%;
     margin-top: 40px;
-    height: auto;
-    min-height: 250px;
   }
 }

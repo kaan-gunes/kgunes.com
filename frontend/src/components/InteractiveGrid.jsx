@@ -115,11 +115,11 @@ const InteractiveGrid = ({ isVisible = false }) => {
                 mouseX, mouseY, influenceRadius
             );
 
-            gradient.addColorStop(0, 'rgba(255, 150, 50, 1)');
-            gradient.addColorStop(0.25, 'rgba(255, 120, 40, 0.7)');
-            gradient.addColorStop(0.5, 'rgba(255, 80, 35, 0.4)');
-            gradient.addColorStop(0.75, 'rgba(255, 50, 30, 0.2)');
-            gradient.addColorStop(1, 'rgba(255, 30, 30, 0.12)');
+            gradient.addColorStop(0, 'rgba(200, 230, 50, 1)');
+            gradient.addColorStop(0.25, 'rgba(180, 210, 45, 0.75)');
+            gradient.addColorStop(0.5, 'rgba(150, 180, 40, 0.4)');
+            gradient.addColorStop(0.75, 'rgba(120, 150, 35, 0.2)');
+            gradient.addColorStop(1, 'rgba(100, 130, 30, 0.1)');
 
             ctx.strokeStyle = gradient;
             ctx.beginPath();

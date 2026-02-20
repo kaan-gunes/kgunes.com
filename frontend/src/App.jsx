@@ -16,6 +16,7 @@ const BeforeAfterSlider = lazy(() => import("./components/BeforeAfterSlider"));
 const ContactSection = lazy(() => import("./components/ContactSection"));
 const InteractiveGrid = lazy(() => import("./components/InteractiveGrid"));
 
+
 // Fallback component for lazy loading
 const LazyFallback = () => null;
 
@@ -30,6 +31,8 @@ function App() {
   const taglineRef = useRef(null);
   const nameRef = useRef(null);
   const appRef = useRef(null);
+  const introWrapperRef = useRef(null);
+  const glassOverlayRef = useRef(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1200 : false);
   const [isLowEnd, setIsLowEnd] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -212,6 +215,54 @@ function App() {
       }
     }
 
+    // Intro wrapper pin + scale-down animation
+    // Selfie ekranın altına geldiğinde ekran kilitlenir, scroll devam ettikçe küçülür ve soluklaşır
+    const introWrapper = introWrapperRef.current;
+    if (introWrapper) {
+      gsap.fromTo(introWrapper,
+        {
+          scale: 1,
+          borderRadius: '0px',
+          filter: 'brightness(1) saturate(1) grayscale(0)',
+          backgroundColor: '#000000',
+        },
+        {
+          scale: 0.5,
+          borderRadius: '10px',
+          opacity: 0.45,
+          filter: 'brightness(0.8) saturate(0.1) grayscale(1)',
+          backgroundColor: '#8a8a82',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.about-section',
+            start: 'bottom 80%',
+            end: '+=1500',
+            pin: introWrapper,
+            scrub: 0.3,
+            pinSpacing: true,
+          },
+        }
+      );
+
+      // Liquid glass overlay — opacity animasyonu (efektler CSS'te baked)
+      const glassOverlay = glassOverlayRef.current;
+      if (glassOverlay) {
+        gsap.fromTo(glassOverlay,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '.about-section',
+              start: 'bottom 80%',
+              end: '+=1500',
+              scrub: 0.3,
+            },
+          }
+        );
+      }
+    }
+
     // 1920px baz alınarak resolution scaling sistemi
     // Tüm ekranlarda site 1920x1080'deki gibi görünsün
     const BASE_WIDTH = 1920;
@@ -219,30 +270,30 @@ function App() {
     const applyResolutionScaling = () => {
       const viewportWidth = window.innerWidth;
       const heroElement = document.querySelector('.hero');
-      const wrapperElement = document.querySelector('.main-wrapper');
+      const introWrapperEl = document.querySelector('.intro-wrapper');
 
       // Update mobile state
       setIsMobile(viewportWidth < 1200);
 
       // Mobilde ve tablette scaling kapat (Native responsive)
       if (viewportWidth < 1200) {
-        if (heroElement && wrapperElement) {
+        if (heroElement && introWrapperEl) {
           heroElement.style.width = '100%';
           heroElement.style.transform = 'none';
-          wrapperElement.style.height = 'auto'; // Reset height
+          introWrapperEl.style.height = 'auto';
         }
         return;
       }
 
       const scale = viewportWidth / BASE_WIDTH;
 
-      if (heroElement && wrapperElement) {
+      if (heroElement && introWrapperEl) {
         heroElement.style.width = `${BASE_WIDTH}px`;
         heroElement.style.transform = `scale(${scale})`;
         heroElement.style.transformOrigin = 'top left';
 
-        // Scale sonrası yüksekliği düzelt
-        wrapperElement.style.height = `${heroElement.scrollHeight * scale}px`;
+        // Scale sonrası intro-wrapper yüksekliğini düzelt
+        introWrapperEl.style.height = `${heroElement.scrollHeight * scale}px`;
       }
     };
 
@@ -273,71 +324,64 @@ function App() {
         <InteractiveGrid isVisible={!isLoading} />
       </Suspense>
 
-      <div className="main-wrapper" style={{ width: '100%', overflow: 'hidden' }}>
-        <div
-          ref={appRef}
-          className="hero"
-          style={{
-            opacity: isLoading ? 0 : 1,
-            transition: 'opacity 0.5s ease-out'
-          }}
-        >
-          {/* Background Image */}
-          <div ref={heroImageRef} className="hero-bg"></div>
+      <div className="main-wrapper" style={{ width: '100%', background: '#1a1d14' }}>
+        {/* Intro Wrapper - scales down on scroll */}
+        <div ref={introWrapperRef} className="intro-wrapper">
+          {/* Liquid glass overlay */}
+          <div ref={glassOverlayRef} className="glass-overlay" />
+          <div
+            ref={appRef}
+            className="hero"
+            style={{
+              opacity: isLoading ? 0 : 1,
+              transition: 'opacity 0.5s ease-out'
+            }}
+          >
+            {/* Background Image */}
+            <div ref={heroImageRef} className="hero-bg"></div>
 
-          {/* Top Text */}
-          <p ref={taglineRef} className="tagline">
-            <em>{t("tagline.line1")}</em> {t("tagline.line2")}
-          </p>
+            {/* Top Text */}
+            <p ref={taglineRef} className="tagline">
+              <em>{t("tagline.line1")}</em> {t("tagline.line2")}
+            </p>
 
-          {/* Main Name */}
-          <h1 ref={nameRef} className="name">
-            <span className="first">Kaan</span>
-            <span className="last">Güneş</span>
-          </h1>
+            {/* Main Name */}
+            <h1 ref={nameRef} className="name">
+              <span className="first">Kaan</span>
+              <span className="last">Güneş</span>
+            </h1>
 
-          {/* About Section */}
-          <section className="about-section">
-            <div ref={selfieRef} className="selfie-container">
-              <img src="/selfie.webp" alt="Kaan Güneş" className="selfie" />
-            </div>
-
-            <div ref={aboutTextRef} className="about-text-wrapper">
-              {/* Üst satırlar */}
-              <div className="about-top-lines">
-                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line1") }} />
-                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2") }} />
-                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2_sub") }} />
+            {/* About Section */}
+            <section className="about-section">
+              <div ref={selfieRef} className="selfie-container">
+                <img src="/selfie.webp" alt="Kaan Güneş" className="selfie" />
               </div>
 
-              {/* Alt satırlar */}
-              <div className="about-bottom-lines">
-                <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line3") }} />
-                <span className="about-line about-line-indent" dangerouslySetInnerHTML={{ __html: t("about.line4") }} />
-                <span className="about-line about-line-indent-2" dangerouslySetInnerHTML={{ __html: t("about.line5") }} />
+              <div ref={aboutTextRef} className="about-text-wrapper">
+                {/* Üst satırlar */}
+                <div className="about-top-lines">
+                  <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line1") }} />
+                  <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2") }} />
+                  <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line2_sub") }} />
+                </div>
+
+                {/* Alt satırlar */}
+                <div className="about-bottom-lines">
+                  <span className="about-line" dangerouslySetInnerHTML={{ __html: t("about.line3") }} />
+                  <span className="about-line about-line-indent" dangerouslySetInnerHTML={{ __html: t("about.line4") }} />
+                  <span className="about-line about-line-indent-2" dangerouslySetInnerHTML={{ __html: t("about.line5") }} />
+                </div>
+
+                {/* Uzun Açıklama Metni */}
+                <AboutCard />
               </div>
+            </section>
 
-              {/* Uzun Açıklama Metni */}
-              <AboutCard />
-            </div>
-          </section>
 
-          {/* Portfolio Section - ABOUT'UN ALTINDA */}
-          <Suspense fallback={<LazyFallback />}>
-            <CardStack3D reducedMotion={reducedMotion} />
-          </Suspense>
-
-          {/* Before/After Slider Section */}
-          <Suspense fallback={<LazyFallback />}>
-            <BeforeAfterSlider />
-          </Suspense>
-
-          {/* Contact Section */}
-          <Suspense fallback={<LazyFallback />}>
-            <ContactSection />
-          </Suspense>
-
+          </div>
         </div>
+
+
       </div>
     </>
   );

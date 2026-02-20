@@ -1,0 +1,390 @@
+/* ===== SPLIT SCREEN SECTION ===== */
+.split-screen-section {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px 40px 60px;
+    z-index: 10;
+    transition: background-color 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ===== COLUMN BASE ===== */
+.split-screen-col {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.88);
+    transition: color 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 0.5s ease;
+    border-radius: 16px;
+    height: 70vh;
+    min-height: 500px;
+}
+
+/* ===== LEFT — GRAPHIC DESIGN (Premium Blue) ===== */
+.split-screen-col.col-left {
+    background: linear-gradient(160deg,
+            #141c2a 0%,
+            #1a2538 50%,
+            #111928 100%);
+}
+
+/* ===== RIGHT — ROBOTICS (Premium Red) ===== */
+.split-screen-col.col-right {
+    background: linear-gradient(200deg,
+            #2a1418 0%,
+            #351a20 50%,
+            #261216 100%);
+}
+
+/* ===== GLASS ORB ===== */
+.glass-orb {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    backdrop-filter: blur(60px);
+    -webkit-backdrop-filter: blur(60px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+    z-index: 1;
+    transition: width 0.6s ease, height 0.6s ease;
+    will-change: transform;
+}
+
+/* Blue glass orb */
+.glass-orb-left {
+    top: 25%;
+    left: 20%;
+    background: radial-gradient(circle at 35% 35%,
+            rgba(56, 100, 180, 0.15) 0%,
+            rgba(56, 100, 180, 0.05) 50%,
+            transparent 70%);
+}
+
+/* Red glass orb */
+.glass-orb-right {
+    top: 30%;
+    right: 20%;
+    background: radial-gradient(circle at 35% 35%,
+            rgba(180, 56, 70, 0.15) 0%,
+            rgba(180, 56, 70, 0.05) 50%,
+            transparent 70%);
+}
+
+/* Orb shimmer */
+.glass-orb::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.03) 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.02) 75%,
+            transparent 100%);
+    animation: orbShimmer 8s linear infinite;
+}
+
+@keyframes orbShimmer {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== FLOATING PARTICLES ===== */
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    left: var(--x);
+    top: var(--y);
+    animation: particleFloat 6s ease-in-out var(--delay) infinite;
+}
+
+.particle-blue {
+    background: rgba(90, 130, 200, 0.5);
+}
+
+.particle-red {
+    background: rgba(200, 90, 100, 0.5);
+}
+
+@keyframes particleFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: translate(20px, -30px) scale(1.5);
+        opacity: 0.7;
+    }
+}
+
+/* ===== CONTENT ===== */
+.col-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Number label */
+.col-label {
+    font-family: "Axiforma", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    color: rgba(255, 255, 255, 0.25);
+    text-transform: uppercase;
+    transition: color 0.5s ease;
+}
+
+/* Title */
+.split-col-title {
+    font-family: "Axiforma", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(2.5rem, 5vw, 5.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    position: relative;
+    z-index: 3;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        letter-spacing 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        text-shadow 0.6s ease;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Description */
+.col-description {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.35);
+    max-width: 240px;
+    line-height: 1.5;
+    transition: color 0.5s ease;
+}
+
+/* ===== FOOTER ===== */
+.col-footer {
+    position: absolute;
+    bottom: clamp(30px, 5vh, 60px);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.split-col-subtitle {
+    font-family: "Axiforma", sans-serif;
+    font-size: clamp(0.65rem, 0.85vw, 0.9rem);
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.18);
+    transition: color 0.6s ease, letter-spacing 0.6s ease, transform 0.6s ease;
+}
+
+/* Arrow button - glass */
+.split-col-arrow {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: border-color 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.split-col-arrow svg {
+    width: 16px;
+    height: 16px;
+    stroke: rgba(255, 255, 255, 0.25);
+    transition: stroke 0.5s ease, transform 0.4s ease;
+    fill: none;
+    stroke-width: 2;
+}
+
+/* ===== HOVER — SHARED ===== */
+.split-screen-col:hover {
+    color: rgba(255, 255, 255, 1);
+    transform: translateY(-4px);
+}
+
+.split-screen-col:hover .glass-orb {
+    width: 420px;
+    height: 420px;
+}
+
+.split-screen-col:hover .col-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.split-screen-col:hover .col-description {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.split-screen-col:hover .split-col-subtitle {
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.35em;
+    transform: translateY(-2px);
+}
+
+.split-screen-col:hover .split-col-arrow svg {
+    stroke: rgba(255, 255, 255, 0.65);
+    transform: translate(1px, -1px);
+}
+
+/* ===== HOVER — BLUE (Graphic Design) ===== */
+.split-screen-col.col-left:hover {
+    box-shadow: 0 20px 80px rgba(56, 100, 180, 0.2),
+        0 0 0 1px rgba(56, 100, 180, 0.1);
+}
+
+.split-screen-col.col-left:hover .split-col-title {
+    transform: scale(1.05);
+    text-shadow: 0 0 50px rgba(56, 100, 180, 0.35),
+        0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+.split-screen-col.col-left:hover .split-col-arrow {
+    border-color: rgba(56, 100, 180, 0.4);
+    background: rgba(56, 100, 180, 0.1);
+    box-shadow: 0 0 20px rgba(56, 100, 180, 0.15);
+    transform: translateY(-3px);
+}
+
+/* ===== HOVER — RED (Robotics) ===== */
+.split-screen-col.col-right:hover {
+    box-shadow: 0 20px 80px rgba(180, 56, 70, 0.2),
+        0 0 0 1px rgba(180, 56, 70, 0.1);
+}
+
+.split-screen-col.col-right:hover .split-col-title {
+    transform: scale(1.05);
+    text-shadow: 0 0 50px rgba(180, 56, 70, 0.35),
+        0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+.split-screen-col.col-right:hover .split-col-arrow {
+    border-color: rgba(180, 56, 70, 0.4);
+    background: rgba(180, 56, 70, 0.1);
+    box-shadow: 0 0 20px rgba(180, 56, 70, 0.15);
+    transform: translateY(-3px);
+}
+
+/* Active */
+.split-screen-col:active .split-col-title {
+    transform: scale(1.02);
+}
+
+.split-screen-col:active .split-col-arrow {
+    transform: scale(0.9);
+}
+
+/* ===== INTRO WRAPPER ===== */
+.intro-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    transform-origin: center center;
+    will-change: transform, border-radius;
+    z-index: 5;
+    background: #000;
+    --shadow-intensity: 0;
+}
+
+.glass-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.03) 50%,
+            rgba(255, 255, 255, 0.06) 100%);
+    box-shadow:
+        inset 0 0 80px 40px rgba(255, 255, 255, 0.06),
+        inset 0 0 120px 60px rgba(26, 29, 20, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .split-screen-section {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px 20px 40px;
+    }
+
+    .split-screen-col {
+        height: 50vh;
+        min-height: 350px;
+    }
+
+    .glass-orb {
+        width: 200px;
+        height: 200px;
+    }
+
+    .split-screen-col:hover .glass-orb {
+        width: 260px;
+        height: 260px;
+    }
+
+    .split-col-title {
+        font-size: clamp(2rem, 7vw, 3.2rem);
+    }
+
+    .split-col-arrow {
+        width: 38px;
+        height: 38px;
+    }
+
+    .particle {
+        width: 2px;
+        height: 2px;
+    }
+}
