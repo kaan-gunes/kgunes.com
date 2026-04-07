@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, lazy, Suspense, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { throttle, prefersReducedMotion, isLowEndDevice } from "./utils/performance";
+import { throttle, prefersReducedMotion } from "./utils/performance";
 import AboutCard from "./components/AboutCard";
 import LoadingScreen from "./components/LoadingScreen";
 import LanguageToggle from "./components/LanguageToggle";
 import CustomCursor from "./components/CustomCursor";
 import "./index.css";
+import HeroParticles from "./components/HeroParticles";
 
 // Lazy load heavy components
 const CardStack3D = lazy(() => import("./components/CardStack3D"));
@@ -31,14 +32,7 @@ function App() {
   const nameRef = useRef(null);
   const appRef = useRef(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1200 : false);
-  const [isLowEnd, setIsLowEnd] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  // Check device capabilities on mount
-  useEffect(() => {
-    setIsLowEnd(isLowEndDevice());
-    setReducedMotion(prefersReducedMotion());
-  }, []);
+  const [reducedMotion] = useState(() => prefersReducedMotion());
 
   // Dinamik Başlık Güncellemesi
   useEffect(() => {
@@ -78,187 +72,245 @@ function App() {
     const tagline = taglineRef.current;
     const name = nameRef.current;
 
-    // Giriş animasyonları - Timeline ile sinematik açılış
-    const introTl = gsap.timeline();
+    // React 18 Strict Mode double-firing fix using gsap.context
+    let ctx = gsap.context(() => {
 
-    // 1. Hero Background: Scale down + Fade in + Blur removal
-    introTl.fromTo(
-      heroImage,
-      { opacity: 0, scale: 1.2, filter: "blur(15px)" },
-      { opacity: 1, scale: 1, filter: "blur(0px)", duration: 2, ease: "power3.out" }
-    );
+      // Aşağıdan yukarıya gradyan fade efekti
+      const scrollDistance = window.innerHeight - 200;
 
-    // 2. Tagline: Slide up + Fade in (starts slightly before hero finishes)
-    introTl.fromTo(
-      tagline,
-      { opacity: 0, y: 40, letterSpacing: "0.1em" },
-      { opacity: 1, y: 0, letterSpacing: "0.01em", duration: 1.2, ease: "power3.out" },
-      "-=1.2" // Overlap with previous animation
-    );
-
-    // 3. Name: Gradient Reveal + Slide Up + Blur removal + Scale
-    introTl.fromTo(
-      name,
-      {
-        opacity: 0,
-        y: 60,
-        scale: 0.95,
-        "--mask-pos": "-100%",
-        filter: "blur(20px)"
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        "--mask-pos": "100%",
-        filter: "blur(0px)",
-        duration: 2.5,
-        ease: "expo.out"
-      },
-      "-=1.0" // Start before tagline finishes
-    );
-
-    // Aşağıdan yukarıya gradyan fade efekti
-    const scrollDistance = window.innerHeight - 200;
-
-    gsap.fromTo(
-      heroImage,
-      {
-        "--mask-position": "100%",
-        "--mask-spread": "0%",
-        filter: "blur(0px) brightness(1)",
-      },
-      {
-        "--mask-position": "20%",
-        "--mask-spread": "20%",
-        filter: "blur(20px) brightness(0.02)",
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: `+=${scrollDistance}`,
-          scrub: true,
-        },
-      }
-    );
-
-    // Selfie parallax efekti - daha yavaş scroll (sticky effect)
-    gsap.to(selfie, {
-      y: 200, // Daha fazla sticky efekt
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".about-section",
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 0.5,
-      },
-    });
-
-    // Text için hafif sticky efekt (fotoğraftan daha az)
-    gsap.to(aboutText, {
-      y: 80,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".about-section",
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 0.5,
-      },
-    });
-
-    // Staggered Text Reveal Animation - Blur to Sharp
-    if (aboutText) {
-      const textLines = aboutText.querySelectorAll(".about-line");
-
-      if (textLines.length > 0) {
-        // Timeline ile sıralı animasyon
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: aboutText,
-            start: "top 80%",
-            end: "top -40%",
-            scrub: .2,
+      if (heroImage && appRef.current) {
+        gsap.fromTo(
+          heroImage,
+          {
+            "--mask-position": "100%",
+            "--mask-spread": "0%",
+            opacity: 1, // Max FPS: replaced filter with pure opacity
           },
-        });
-
-        // Her satırı sırayla animate et
-        textLines.forEach((line, i) => {
-          tl.fromTo(
-            line,
-            {
-              opacity: 0,
-              filter: "blur(10px)",
+          {
+            "--mask-spread": "20%",
+            opacity: 0.1, // Reduce opacity instead of blur
+            ease: "none",
+            scrollTrigger: {
+              trigger: appRef.current,
+              start: "top top",
+              end: `+=${scrollDistance}`,
+              scrub: true,
             },
-            {
-              opacity: 1,
-              filter: "blur(0px)",
-              duration: 1,
-              ease: "expo.out",
-            },
-            i * 0.2
-          );
-        });
+          }
+        );
+      }
 
-        // Uzun açıklama metni animasyonu
-        const longDesc = aboutText.querySelector(".about-card-container");
-        if (longDesc) {
-          tl.fromTo(
-            longDesc,
-            { opacity: 0, y: 20, filter: "blur(5px)" },
-            { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, ease: "power2.out" },
-            ">-=0.5"
-          );
+      // Particles Bg Fade out on scroll
+      if (appRef.current) {
+        const particlesCanvas = appRef.current.querySelector('.hero-particles');
+        if (particlesCanvas) {
+          gsap.to(particlesCanvas, {
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: appRef.current,
+              start: "top top",
+              end: `+=${scrollDistance}`,
+              scrub: true,
+            },
+          });
         }
       }
-    }
 
-    // 1920px baz alınarak resolution scaling sistemi
-    // Tüm ekranlarda site 1920x1080'deki gibi görünsün
-    const BASE_WIDTH = 1920;
+      if (appRef.current) {
+        const aboutSection = appRef.current.querySelector('.about-section');
 
-    const applyResolutionScaling = () => {
-      const viewportWidth = window.innerWidth;
-      const heroElement = document.querySelector('.hero');
-      const wrapperElement = document.querySelector('.main-wrapper');
+        if (aboutSection) {
+          // Remove heavy GSAP scrub parallax from selfie and text.
+          // The constant y-transform updates on scroll were causing micro-stutters (layout thrashing).
+          // Replaced with simple CSS transitions or static placement for max FPS.
 
-      // Update mobile state
-      setIsMobile(viewportWidth < 1200);
-
-      // Mobilde ve tablette scaling kapat (Native responsive)
-      if (viewportWidth < 1200) {
-        if (heroElement && wrapperElement) {
-          heroElement.style.width = '100%';
-          heroElement.style.transform = 'none';
-          wrapperElement.style.height = 'auto'; // Reset height
+          if (selfie) {
+            gsap.set(selfie, { y: 0 }); // reset any previous state
+          }
+          if (aboutText) {
+            gsap.set(aboutText, { y: 0 }); // reset any previous state
+          }
         }
-        return;
       }
 
-      const scale = viewportWidth / BASE_WIDTH;
+      // Staggered Text Reveal Animation - Blur to Sharp
+      if (aboutText) {
+        const textLines = aboutText.querySelectorAll(".about-line");
 
-      if (heroElement && wrapperElement) {
-        heroElement.style.width = `${BASE_WIDTH}px`;
-        heroElement.style.transform = `scale(${scale})`;
-        heroElement.style.transformOrigin = 'top left';
+        if (textLines.length > 0) {
+          // Timeline ile sıralı animasyon
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: aboutText,
+              start: "top 80%",
+              end: "top -40%",
+              scrub: .2,
+            },
+          });
 
-        // Scale sonrası yüksekliği düzelt
-        wrapperElement.style.height = `${heroElement.scrollHeight * scale}px`;
+          // Her satırı sırayla animate et
+          textLines.forEach((line, i) => {
+            tl.fromTo(
+              line,
+              {
+                opacity: 0,
+                y: 10,
+              },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "expo.out",
+              },
+              i * 0.2
+            );
+          });
+
+          // Uzun açıklama metni animasyonu
+          const longDesc = aboutText.querySelector(".about-card-container");
+          if (longDesc) {
+            tl.fromTo(
+              longDesc,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
+              ">-=0.5"
+            );
+          }
+        }
       }
-    };
 
-    // Throttled resize handler for performance
-    const throttledResize = throttle(applyResolutionScaling, 100);
+      // Re-initialize ScrollTrigger to check for updated DOM
+      ScrollTrigger.refresh();
 
-    // İlk yüklemede ve resize'da uygula
-    applyResolutionScaling();
-    window.addEventListener('resize', throttledResize);
+    }, appRef); // <-- Scope GSAP context to the app container
+
+    // Responsive breakpoint handler
+    const handleResize = throttle(() => {
+      setIsMobile(window.innerWidth < 1200);
+    }, 100);
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
     return () => {
+      ctx.revert(); // <-- Clean up GSAP context
       lenis.destroy();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      window.removeEventListener('resize', throttledResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // Intro animations - triggered when loading screen completes
+  useEffect(() => {
+    if (isLoading) return;
+
+    const heroImage = heroImageRef.current;
+    const tagline = taglineRef.current;
+    const name = nameRef.current;
+
+    // Set initial states before animating
+    if (heroImage) gsap.set(heroImage, { opacity: 0 });
+    // Max FPS: No initial blur
+    if (name) gsap.set(name, { opacity: 0, scale: 0.95 });
+
+    const introCtx = gsap.context(() => {
+      const introTl = gsap.timeline({ delay: 0.3 });
+
+      // 1. Hero Background: fade-in
+      if (heroImage) {
+        introTl.fromTo(
+          heroImage,
+          { opacity: 0 },
+          { opacity: 1, duration: 1.5, ease: "power2.out" }
+        );
+      }
+
+      // 2. Tagline: Fade-in + Slide-up (eşzamanlı)
+      if (tagline) {
+        introTl.fromTo(
+          tagline,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
+          "-=1.0"
+        );
+      }
+
+      // 3. Name: Magical fade-in with blur dissolve
+      if (name) {
+        const nameWrapper = name.closest('.name-wrapper');
+        // Max FPS: remove blur from intro anim
+        introTl.fromTo(
+          name,
+          { opacity: 0, scale: 0.95 },
+          { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" },
+          "-=0.8"
+        );
+
+        // Sparkle particles around the name
+        if (nameWrapper) {
+          const sparkleCount = 28;
+          const sparkles = [];
+          for (let i = 0; i < sparkleCount; i++) {
+            const sparkle = document.createElement('span');
+            sparkle.className = 'sparkle';
+            nameWrapper.appendChild(sparkle);
+            sparkles.push(sparkle);
+
+            // Random position around the text
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 5 + 2;
+            const delay = Math.random() * 1.2;
+
+            gsap.set(sparkle, {
+              left: `${x}%`,
+              top: `${y}%`,
+              width: size,
+              height: size,
+              opacity: 0,
+              scale: 0,
+            });
+
+            // Sparkle appear, shimmer, and fade
+            introTl.to(
+              sparkle,
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 0.4,
+                ease: "back.out(3)",
+              },
+              `-=1.6`
+            );
+
+            // Shimmer with random offset
+            introTl.to(
+              sparkle,
+              {
+                opacity: 0,
+                scale: 0,
+                y: (Math.random() - 0.5) * 40,
+                x: (Math.random() - 0.5) * 30,
+                duration: 0.8 + Math.random() * 0.6,
+                delay: delay * 0.3,
+                ease: "power2.in",
+              },
+              ">-=0.1"
+            );
+          }
+
+          // Cleanup sparkles after animation
+          introTl.call(() => {
+            sparkles.forEach(s => s.remove());
+          });
+        }
+      }
+    }, appRef);
+
+    return () => {
+      introCtx.revert();
+    };
+  }, [isLoading]);
 
   return (
     <>
@@ -273,7 +325,7 @@ function App() {
         <InteractiveGrid isVisible={!isLoading} />
       </Suspense>
 
-      <div className="main-wrapper" style={{ width: '100%', overflow: 'hidden' }}>
+      <div className="main-wrapper" style={{ width: '100%', overflowX: 'hidden' }}>
         <div
           ref={appRef}
           className="hero"
@@ -282,19 +334,27 @@ function App() {
             transition: 'opacity 0.5s ease-out'
           }}
         >
-          {/* Background Image */}
-          <div ref={heroImageRef} className="hero-bg"></div>
+          {/* Hero Viewport - First Fold */}
+          <div className="hero-viewport">
+            {/* Background Image */}
+            <div ref={heroImageRef} className="hero-bg"></div>
 
-          {/* Top Text */}
-          <p ref={taglineRef} className="tagline">
-            <em>{t("tagline.line1")}</em> {t("tagline.line2")}
-          </p>
+            {/* Premium Particles Canvas Layer */}
+            <HeroParticles />
 
-          {/* Main Name */}
-          <h1 ref={nameRef} className="name">
-            <span className="first">Kaan</span>
-            <span className="last">Güneş</span>
-          </h1>
+            {/* Top Text */}
+            <p ref={taglineRef} className="tagline" style={{ opacity: 0 }}>
+              <em>{t("tagline.line1")}</em>{' '}{t("tagline.line2")}
+            </p>
+
+            {/* Main Name */}
+            <div className="name-wrapper">
+              <h1 ref={nameRef} className="name">
+                <span className="first">Kaan</span>
+                <span className="last">Güneş</span>
+              </h1>
+            </div>
+          </div>
 
           {/* About Section */}
           <section className="about-section">
@@ -322,15 +382,24 @@ function App() {
             </div>
           </section>
 
+          {/* Section Divider */}
+          <div className="section-divider" />
+
           {/* Portfolio Section - ABOUT'UN ALTINDA */}
           <Suspense fallback={<LazyFallback />}>
             <CardStack3D reducedMotion={reducedMotion} />
           </Suspense>
 
+          {/* Section Divider */}
+          <div className="section-divider" />
+
           {/* Before/After Slider Section */}
           <Suspense fallback={<LazyFallback />}>
             <BeforeAfterSlider />
           </Suspense>
+
+          {/* Section Divider */}
+          <div className="section-divider" />
 
           {/* Contact Section */}
           <Suspense fallback={<LazyFallback />}>

@@ -80,10 +80,6 @@ const ContactSection = memo(function ContactSection() {
                 </div>
 
                 <div className="contact-divider" />
-
-                <a href="https://docs.google.com/document/d/12yH4NLliMYY6c7fldR6Io2zSaRDnJwSGqME_h56_mLQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="about-link">
-                    {t('contact.aboutMe')}
-                </a>
             </div>
 
             <p className="copyright">© 2025 Kaan Güneş</p>

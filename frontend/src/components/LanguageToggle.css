@@ -75,12 +75,17 @@
     transform: scale(0.97);
 }
 
-/* Mobile responsive */
+/* ═══════════════════════════════════════════
+   MOBILE UI PRO MAX — LANGUAGE TOGGLE
+   ═══════════════════════════════════════════ */
+
 @media (max-width: 768px) {
     .language-toggle {
-        top: 15px;
-        right: 15px;
+        top: max(16px, env(safe-area-inset-top, 16px));
+        right: 16px;
         padding: 3px;
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.12);
     }
 
     .lang-slider {
@@ -91,6 +96,23 @@
     }
 
     .lang-option {
-        padding: 6px 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .language-toggle {
+        top: max(12px, env(safe-area-inset-top, 12px));
+        right: 12px;
+    }
+
+    .lang-option {
+        padding: 7px 10px;
+        font-size: 11px;
     }
 }

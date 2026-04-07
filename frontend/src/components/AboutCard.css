@@ -1,8 +1,8 @@
 .about-card-container {
-  width: clamp(280px, 32%, 500px);
-  margin-left: clamp(40%, 55%, 60%);
+  width: clamp(320px, 45%, 700px);
+  margin-left: clamp(35%, 50%, 55%);
   margin-top: clamp(60px, 8vw, 120px);
-  height: clamp(300px, 25vw, 450px);
+  height: clamp(200px, 15vw, 300px);
 }
 
 .about-card-inner {
@@ -13,20 +13,56 @@
   overflow: hidden;
 }
 
-/* Liquid Glass Effect */
+/* Liquid Glass Effect — Enhanced */
 .liquid-glass {
   background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.01));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-  border-left: 1px solid rgba(255, 255, 255, 0.3);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   box-shadow:
-    0 15px 35px rgba(0, 0, 0, 0.2),
-    inset 0 0 30px rgba(255, 255, 255, 0.02);
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(255, 255, 255, 0.015);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animated shimmer highlight sweeping across the glass */
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.04) 40%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 60%,
+    transparent 80%);
+  animation: glass-shimmer 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glass-shimmer {
+  0% { left: -100%; }
+  50% { left: 200%; }
+  100% { left: 200%; }
+}
+
+.liquid-glass:hover {
+  border-top-color: rgba(255, 255, 255, 0.3);
+  border-left-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 0 50px rgba(255, 255, 255, 0.02),
+    0 0 30px rgba(255, 255, 255, 0.03);
 }
 
 .about-card-content {
@@ -73,10 +109,52 @@
 /* Mobile Responsive */
 @media (max-width: 1200px) {
   .about-card-container {
-    width: 90%;
-    margin-left: 5%;
-    margin-top: 40px;
+    width: calc(100% - 16px);
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 32px;
     height: auto;
-    min-height: 250px;
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-card-container {
+    width: calc(100% - 8px);
+    margin-top: 28px;
+  }
+
+  .about-card-content {
+    padding: clamp(16px, 4vw, 24px);
+  }
+
+  .about-card-content p {
+    font-size: clamp(13px, 3.6vw, 15px);
+    line-height: 1.65;
+  }
+
+  /* Slower shimmer on mobile for battery */
+  .liquid-glass::before {
+    animation-duration: 12s;
+  }
+
+  .liquid-glass {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+@media (max-width: 480px) {
+  .about-card-container {
+    width: 100%;
+  }
+
+  .about-card-content {
+    padding: 16px;
+  }
+
+  .about-card-content p {
+    font-size: clamp(12.5px, 3.5vw, 14px);
+    line-height: 1.7;
   }
 }

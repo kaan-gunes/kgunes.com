@@ -1,8 +1,8 @@
 .contact-section {
-    position: absolute;
-    top: 4850px;
+    position: relative;
     width: 100%;
     min-height: 648px;
+    margin-top: clamp(80px, 10vw, 150px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,29 +12,63 @@
 }
 
 .contact-glass {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: clamp(60px, 8vw, 120px) clamp(80px, 12vw, 200px);
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 32px;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(60px, 8vw, 120px) clamp(80px, 12vw, 200px);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 32px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Animated gradient border glow */
+.contact-glass::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 33px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    transparent 30%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotate-border 8s linear infinite;
+  pointer-events: none;
+}
+
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rotate-border {
+  to { --border-angle: 360deg; }
 }
 
 .contact-glass:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 16px 48px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 0 80px rgba(255, 255, 255, 0.02);
 }
 
 .contact-title {
@@ -69,11 +103,27 @@
 }
 
 .social-link:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Brand-colored hover glows */
+.social-link[aria-label="LinkedIn"]:hover {
+  border-color: rgba(0, 119, 181, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 119, 181, 0.15);
+}
+
+.social-link[aria-label="Instagram"]:hover {
+  border-color: rgba(225, 48, 108, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(225, 48, 108, 0.15);
+}
+
+.social-link[aria-label="GitHub"]:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.08);
 }
 
 .social-icon {
@@ -186,37 +236,164 @@
 }
 
 .copyright {
-    margin-top: clamp(40px, 5vw, 60px);
-    font-family: "Axiforma", sans-serif;
-    font-size: clamp(12px, 1vw, 14px);
-    color: rgba(255, 255, 255, 0.3);
-    letter-spacing: 0.02em;
+  margin-top: clamp(40px, 5vw, 60px);
+  font-family: "Axiforma", sans-serif;
+  font-size: clamp(12px, 1vw, 14px);
+  background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4), rgba(255,255,255,0.2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.05em;
 }
 
-/* Mobile updated */
+/* ═══════════════════════════════════════════
+   MOBILE UI PRO MAX — CONTACT
+   ═══════════════════════════════════════════ */
+
 @media (max-width: 1200px) {
     .contact-section {
         position: relative;
         top: auto;
-        padding: 40px 20px;
+        padding: 48px 20px;
         min-height: auto;
-        margin-top: 40px;
+        margin-top: 32px;
     }
 
     .contact-glass {
-        padding: 40px 30px;
+        padding: 48px 32px;
+        border-radius: 24px;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .contact-glass::before {
+        animation-duration: 12s;
+    }
+
+    .contact-title {
+        font-size: clamp(28px, 7vw, 48px);
+        margin-bottom: clamp(28px, 5vw, 48px);
+    }
+
+    .social-links {
+        gap: 16px;
+    }
+
+    .social-link {
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .social-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .social-name {
+        font-size: 13px;
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-section {
+        padding: 40px 16px;
+        margin-top: 24px;
+    }
+
+    .contact-glass {
+        padding: 40px 24px;
         border-radius: 20px;
+        max-width: none;
+        width: 100%;
+    }
+
+    .contact-title {
+        font-size: clamp(24px, 7vw, 36px);
+        margin-bottom: 28px;
     }
 
     .social-links {
         gap: 12px;
+        flex-wrap: nowrap;
+        justify-content: center;
     }
 
     .social-link {
-        padding: 16px;
+        padding: 16px 14px;
+        border-radius: 14px;
+        min-width: 0;
+        flex: 1;
+        max-width: 120px;
+        gap: 10px;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
     }
 
     .social-name {
-        display: none;
+        font-size: 11px;
+        display: block;
+        opacity: 0.7;
+    }
+
+    .email-row {
+        padding: 14px 20px;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .email-text {
+        font-size: 13px;
+    }
+
+    .contact-divider {
+        width: 40px;
+        margin: 20px 0;
+    }
+
+    .copyright {
+        margin-top: 32px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-section {
+        padding: 32px 12px;
+    }
+
+    .contact-glass {
+        padding: 32px 16px;
+        border-radius: 16px;
+    }
+
+    .contact-title {
+        font-size: clamp(22px, 6.5vw, 30px);
+        margin-bottom: 24px;
+    }
+
+    .social-link {
+        padding: 14px 10px;
+        gap: 8px;
+    }
+
+    .social-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .social-name {
+        font-size: 10px;
+    }
+
+    .email-row {
+        padding: 12px 16px;
+    }
+
+    .email-text {
+        font-size: 12px;
     }
 }

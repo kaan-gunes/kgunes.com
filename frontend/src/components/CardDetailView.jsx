@@ -24,6 +24,18 @@ const itemVariants = {
     exit: { opacity: 0, y: 20 }
 };
 
+// CSS columns soldan sağa sıralama: öğeleri sütunlara dağıtır
+// Örn: [1,2,3,4,5,6,7,8] → 4 sütunda: col0=[1,5], col1=[2,6], col2=[3,7], col3=[4,8]
+// columns top-down doldurduğu için bu sıra soldan sağa satır akışı verir
+const reorderForColumns = (items, columnCount = 4) => {
+    if (!items || items.length === 0) return items;
+    const columns = Array.from({ length: columnCount }, () => []);
+    items.forEach((item, i) => {
+        columns[i % columnCount].push(item);
+    });
+    return columns.flat();
+};
+
 // Kart ID -> Klasör eşleşmesi
 const CARD_FOLDERS = {
     1: { folder: 'logo', titleKey: 'cards.logos' },
@@ -35,9 +47,8 @@ const CARD_FOLDERS = {
 // Görseller - her klasör için hardcoded (performans için)
 const GALLERY_IMAGES = {
     logo: [
-        'ares.webp', 'BirunAI.webp', 'gorgez.webp', 'infinitech.webp',
-        'itu sf.webp', 'eftos.webp', 'ituspor.webp', 'kovak.webp', 'notmatix.webp',
-        'SAFAK UAV.webp', 'stylemax.webp'
+        'SAFAK UAV.webp', 'bazaarly.webp', 'guvercin.webp', 'infinitech.webp',
+        'itu sf.webp', 'itumportal.webp', 'kovak.webp', 'locin.webp', 'stylemax.webp'
     ],
     clothing: [
         // Manken görselleri + vektörel karşılıkları
@@ -63,11 +74,11 @@ const GALLERY_IMAGES = {
         { main: 'hedef_itu.webp', pre: 'hedef_itu_pre.webp' }
     ],
     sosyalmedya: [
-        '10_kasim.webp', 'zenith_eventco.webp', 'yusuf.webp', 'alp_2.webp', 'alp.webp',
-        'bayram.webp', 'dudomi_sf.webp', 'erasmus_gidenler.webp', 'erasmus_hazirlik.webp',
-        'hamza.webp', 'iel_sf.webp', 'kaan_dg.webp', 'kabatas_hazirlik.webp',
-        'kasim_sf.webp', 'cemberlitas.webp', 'kerem.webp', 'komite_sf.webp', 'mvp_sf.webp',
-        'son_1.webp', 'son_5.webp', 'ugur_dg.webp', 'yuzdelik.webp'
+        '10_kasim.webp', '3x3.webp', '6_subat.webp', 'alp.webp',
+        'dudomi_sf.webp', 'iel_sf.webp', 'kaan_dg.webp',
+        { main: 'kasim_sf.webp', pre: 'kasim_sf_pre.webp' },
+        'komite_sf.webp', 'makermust_iot.webp', 'makermust_python.webp',
+        'mvp_sf.webp', 'son_1.webp', 'son_5.webp', 'zenith_eventco.webp'
     ]
 };
 
@@ -368,7 +379,8 @@ const CardDetailView = memo(({ cardId, onClose }) => {
     const { t } = useTranslation();
     const cardInfo = CARD_FOLDERS[cardId];
     const basePath = `/images/${cardInfo?.folder}`;
-    const images = GALLERY_IMAGES[cardInfo?.folder] || [];
+    const rawImages = GALLERY_IMAGES[cardInfo?.folder] || [];
+    const images = reorderForColumns(rawImages, 4);
     const [selectedImage, setSelectedImage] = useState(null); // Lightbox için state
 
     // ESC tuşu ile kapatma - önce büyütülmüş görsel, sonra modal
@@ -414,7 +426,6 @@ const CardDetailView = memo(({ cardId, onClose }) => {
     if (!cardInfo) return null;
 
     const isClothing = cardInfo.folder === 'clothing';
-    const isIrl = cardInfo.folder === 'irl';
 
     // Portal ile body'ye taşıyoruz - bu sayede parent transform'lardan etkilenmez/
     return ReactDOM.createPortal(
@@ -462,10 +473,10 @@ const CardDetailView = memo(({ cardId, onClose }) => {
                                 onEnlarge={setSelectedImage}
                             />
                         ))
-                    ) : isIrl ? (
-                        // IRL galeri: bazı görseller before/after toggle ile
+                    ) : (
+                        // Diğer galeriler (IRL, sosyalmedya, logo)
                         images.map((item, index) => {
-                            // Eğer item bir obje ise (main/pre), IrlImage kullan
+                            // Eğer item bir obje ise (main/pre), IrlImage (before/after toggle) kullan
                             if (typeof item === 'object' && item.main && item.pre) {
                                 return (
                                     <IrlImage
@@ -487,16 +498,6 @@ const CardDetailView = memo(({ cardId, onClose }) => {
                                 />
                             );
                         })
-                    ) : (
-                        // Normal galeri
-                        images.map((img, index) => (
-                            <GalleryImage
-                                key={img}
-                                src={`${basePath}/${img}`}
-                                alt={img}
-                                onClick={setSelectedImage}
-                            />
-                        ))
                     )}
                 </div>
 

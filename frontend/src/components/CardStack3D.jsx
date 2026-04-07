@@ -7,10 +7,10 @@ import './CardStack3D.css';
 const CardDetailView = lazy(() => import('./CardDetailView'));
 
 const PROJECT_DATA = [
-  { id: 3, titleKey: "cards.posters", image: "/images/CARDS/cd_card.webp" },
-  { id: 4, titleKey: "cards.socialMedia", image: "/images/CARDS/sf_st_card.webp" },
-  { id: 2, titleKey: "cards.clothing", image: "/images/CARDS/hoodie_card.webp" },
   { id: 1, titleKey: "cards.logos", image: "/images/CARDS/sf_card.webp" },
+  { id: 4, titleKey: "cards.socialMedia", image: "/images/CARDS/sf_st_card.webp" },
+  { id: 3, titleKey: "cards.posters", image: "/images/CARDS/cd_card.webp" },
+  { id: 2, titleKey: "cards.clothing", image: "/images/CARDS/hoodie_card.webp" },
 ];
 
 // Optimized spring configuration
@@ -69,11 +69,11 @@ const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress, reducedM
         aspectRatio: '3/4',
         cursor: 'pointer',
         position: 'relative',
-        borderRadius: '12px',
+        borderRadius: '16px',
         overflow: 'hidden',
-        background: 'rgba(20,20,25,1)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        background: 'rgba(15,15,20,1)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 12px 32px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(255,255,255,0.04)',
         rotateX,
         y,
         transformPerspective: 1000,
@@ -87,8 +87,8 @@ const MobileCard = memo(({ card, index, onCardClick, t, scrollProgress, reducedM
         bottom: 0,
         left: 0,
         right: 0,
-        padding: '16px 12px',
-        background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+        padding: '20px 14px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)',
         zIndex: 2,
       }}>
         <h3 style={{
@@ -298,7 +298,7 @@ const CardStack3D = ({ setCursorVariant, reducedMotion = false }) => {
   // Desktop mouse tracking (optimized)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springConfig = reducedMotion 
+  const springConfig = reducedMotion
     ? { damping: 60, stiffness: 200, mass: 0.3 }
     : { damping: 40, stiffness: 100, mass: 0.5 };
   const rotateXRange = reducedMotion ? [2, -2] : [8, -8];
@@ -388,17 +388,14 @@ const CardStack3D = ({ setCursorVariant, reducedMotion = false }) => {
       <section
         ref={sectionRef}
         style={{
-          position: isMobile ? 'relative' : 'absolute',
-          top: isMobile ? 'auto' : 'calc(2160px + 35vw)',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          position: 'relative',
           width: '100%',
           minHeight: isMobile ? 'auto' : '500px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           padding: isMobile ? '40px 16px' : 'clamp(10px, 2vw, 20px)',
-          marginTop: isMobile ? '60px' : '0'
+          marginTop: isMobile ? '60px' : 'clamp(80px, 10vw, 150px)'
         }}
       >
         {/* Arka Plan Başlık */}
@@ -407,11 +404,9 @@ const CardStack3D = ({ setCursorVariant, reducedMotion = false }) => {
           animate={{ opacity: isMobile ? 0.05 : 0.08 }}
           transition={{ duration: 1 }}
           style={{
-            position: 'absolute',
-            top: isMobile ? '0%' : '10%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: isMobile ? 'clamp(50px, 16vw, 100px)' : 'clamp(120px, 20vw, 280px)',
+            position: 'relative',
+            textAlign: 'center',
+            fontSize: isMobile ? 'clamp(50px, 16vw, 100px)' : 'clamp(120px, 20vw, 200px)',
             fontWeight: 900,
             letterSpacing: '0.02em',
             color: 'white',
@@ -420,6 +415,7 @@ const CardStack3D = ({ setCursorVariant, reducedMotion = false }) => {
             pointerEvents: 'none',
             zIndex: 0,
             userSelect: 'none',
+            marginBottom: isMobile ? '-60px' : '-120px',
           }}
         >
           {t('cards.title')}
@@ -430,11 +426,11 @@ const CardStack3D = ({ setCursorVariant, reducedMotion = false }) => {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '12px',
+            gap: '14px',
             width: '100%',
-            maxWidth: '380px',
+            maxWidth: '420px',
             marginTop: 'clamp(60px, 12vw, 100px)',
-            padding: '0 8px',
+            padding: '0 4px',
             zIndex: 1,
           }}>
             {PROJECT_DATA.map((card, index) => (

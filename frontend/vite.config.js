@@ -24,9 +24,11 @@ export default defineConfig(({ mode }) => ({
           // Vendor chunk - React core
           'vendor-react': ['react', 'react-dom'],
           // Animation libraries
-          'vendor-animation': ['framer-motion', 'gsap'],
+          'vendor-animation': ['framer-motion', 'gsap', 'lenis'],
           // i18n
           'vendor-i18n': ['i18next', 'react-i18next'],
+          // Icons
+          'vendor-icons': ['lucide-react'],
         },
       },
     },

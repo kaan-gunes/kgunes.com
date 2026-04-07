@@ -1,15 +1,11 @@
 .before-after-section {
-    position: absolute;
-    /* Responsive: vw-based offset - kartların altında */
-    top: 3888px;
-    left: 50%;
+    position: relative;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: clamp(20px, 3vw, 40px) 5%;
-    will-change: transform;
-    transform: translateX(-50%) translateZ(0);
+    margin-top: clamp(80px, 10vw, 150px);
 }
 
 .before-after-container {
@@ -42,7 +38,7 @@
 
 .slider-title {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-    font-size: clamp(2rem, 6vw, 7rem);
+    font-size: clamp(2rem, 6vw, 5rem);
     font-weight: 800;
     color: #fff;
     line-height: 1.1;
@@ -66,7 +62,9 @@
     border-radius: clamp(8px, 1vw, 16px);
     overflow: hidden;
     cursor: ew-resize;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .slider-image {
@@ -161,17 +159,22 @@
     left: 20px;
 }
 
-/* Mobile Responsive */
+/* ═══════════════════════════════════════════
+   MOBILE UI PRO MAX — SLIDER
+   ═══════════════════════════════════════════ */
+
 @media (max-width: 1200px) {
     .before-after-section {
         position: relative;
         top: auto;
-        margin-top: 60px;
+        margin-top: 48px;
+        padding: 24px 16px;
     }
 
     .before-after-container {
         flex-direction: column;
-        gap: 30px;
+        gap: 24px;
+        align-items: center;
     }
 
     .slider-left-content {
@@ -182,16 +185,87 @@
     .ps-logo {
         position: relative;
         top: 0;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+    }
+
+    .slider-title {
+        font-size: clamp(1.6rem, 6vw, 2.8rem);
+        text-align: center;
     }
 
     .slider-wrapper {
-        width: 90%;
+        width: calc(100% - 32px);
+        max-width: 420px;
         flex: none;
+        aspect-ratio: 4/5;
+    }
+}
+
+@media (max-width: 768px) {
+    .before-after-section {
+        margin-top: 32px;
+        padding: 20px 16px;
+    }
+
+    .before-after-container {
+        gap: 20px;
+    }
+
+    .slider-title {
+        font-size: clamp(1.4rem, 7vw, 2.2rem);
+    }
+
+    .slider-wrapper {
+        width: calc(100% - 24px);
+        max-width: 380px;
+        border-radius: 16px;
+        box-shadow:
+            0 16px 48px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .slider-button {
+        width: 44px;
+        height: 44px;
     }
 
     .label {
-        padding: 6px 12px;
+        padding: 6px 14px;
+        font-size: 11px;
+        bottom: 16px;
+        border-radius: 8px;
+    }
+
+    .before-label {
+        right: 12px;
+    }
+
+    .after-label {
+        left: 12px;
+    }
+
+    .ps-logo {
+        width: clamp(28px, 7vw, 40px);
+    }
+}
+
+@media (max-width: 480px) {
+    .before-after-section {
+        margin-top: 24px;
+        padding: 16px 12px;
+    }
+
+    .slider-wrapper {
+        width: 100%;
+        max-width: none;
+    }
+
+    .slider-title {
+        font-size: clamp(1.2rem, 6.5vw, 1.8rem);
+    }
+
+    .label {
         font-size: 10px;
+        padding: 5px 12px;
     }
 }
